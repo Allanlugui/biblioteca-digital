@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import type { NextRequest } from "next/server";
 import { API_ERROR_CODES, fail, ok, formatZodErrors } from "@/lib/api";
+import { selecionarBackend } from "@/lib/armazenamento/indice";
+import { ehDrivePath, nomeParaHash } from "@/lib/armazenamento/tipos";
 import { fetchPdfResiliente, PdfError } from "@/lib/pdf";
 import { checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/rate-limit";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
@@ -10,15 +12,13 @@ import { buscarDocumentoPorId } from "@/services/documentos";
 
 export const dynamic = "force-dynamic";
 
-const BUCKET = "pdfs";
-
-function urlPublica(supabase: NonNullable<ReturnType<typeof criarClienteAdmin>>, path: string): string {
-  return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
-}
-
 // Toda ida ao Acervo tem prazo: se ele não responde, o cliente usa o proxy direto.
 async function comTimeout<T>(promessa: Promise<T> | PromiseLike<T>, ms: number): Promise<T | null> {
   return Promise.race([Promise.resolve(promessa), new Promise<null>((resolve) => setTimeout(() => resolve(null), ms))]);
+}
+
+function urlLeitura(backend: ReturnType<typeof selecionarBackend>, id: string, path: string): string {
+  return backend.urlPublica?.(path) ?? `/api/arquivo/${encodeURIComponent(id)}/bytes`;
 }
 
 // Garante o PDF no acervo universal: serve do Storage quando já existe,
@@ -65,9 +65,17 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
     10_000,
   );
   const arquivado = linha && !linha.error ? linha.data : null;
+  const backend = selecionarBackend();
 
   // Já arquivado? Serve direto, sem depender da fonte externa.
   if (arquivado?.storage_path) {
+    const ref = arquivado.storage_path as string;
+    if (ehDrivePath(ref)) {
+      const okExiste = await comTimeout(backend.existe(ref), 10_000);
+      if (!okExiste) {
+        return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
+      }
+    }
     await comTimeout(
       Promise.resolve(
         admin
@@ -77,7 +85,7 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
       ),
       10_000,
     );
-    return ok({ url: urlPublica(admin, arquivado.storage_path) }, headers);
+    return ok({ url: urlLeitura(backend, parsed.data, ref) }, headers);
   }
 
   // Origem do arquivo: PDF direto ou, sem ele, a página da publicação
@@ -160,26 +168,24 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
   }
 
   const sha256 = createHash("sha256").update(Buffer.from(bytes)).digest("hex");
-  const path = `${sha256}.pdf`;
+  const nome = nomeParaHash(sha256);
 
   // Dedup entre fontes: mesmo arquivo já arquivado sob outro id.
   const mesmoArquivo = await comTimeout(
     admin.from("documentos").select("storage_path").eq("sha256", sha256).maybeSingle(),
     10_000,
   );
-  const storagePath: string | null = mesmoArquivo && !mesmoArquivo.error ? (mesmoArquivo.data?.storage_path ?? null) : null;
+  let storagePath: string | null = mesmoArquivo && !mesmoArquivo.error ? (mesmoArquivo.data?.storage_path ?? null) : null;
   if (mesmoArquivo === null) {
     return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
   }
   if (!storagePath) {
-    const upload = await comTimeout(
-      admin.storage.from(BUCKET).upload(path, bytes, {
-        contentType: "application/pdf",
-        upsert: true,
-      }),
-      25_000,
-    );
-    if (!upload || upload.error) {
+    try {
+      storagePath = await comTimeout(backend.guardar(nome, bytes, "application/pdf"), 60_000);
+    } catch {
+      storagePath = null;
+    }
+    if (!storagePath) {
       return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
     }
   }
@@ -201,7 +207,7 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
           assuntos: documento?.assuntos ?? arquivado?.assuntos ?? [],
           idioma: documento?.idioma ?? arquivado?.idioma ?? null,
           tipo: documento?.tipo ?? arquivado?.tipo ?? null,
-          storage_path: storagePath ?? path,
+          storage_path: storagePath ?? nome,
           sha256,
           tamanho_bytes: bytes.byteLength,
           acessos: 1,
@@ -216,5 +222,5 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
     return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
   }
 
-  return ok({ url: urlPublica(admin, storagePath ?? path) }, headers);
+  return ok({ url: urlLeitura(backend, parsed.data, storagePath ?? nome) }, headers);
 }

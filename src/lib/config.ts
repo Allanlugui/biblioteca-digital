@@ -10,6 +10,9 @@ export type ServerConfig = {
   semanticScholarApiKey: string;
   googleSearchApiKey: string;
   googleSearchCx: string;
+  storageDriver: "drive" | "supabase";
+  googleServiceAccountJson: string;
+  googleDriveFolderId: string;
 };
 
 function readPositiveInt(name: string, fallback: number): number {
@@ -40,4 +43,7 @@ export const config: ServerConfig = {
   semanticScholarApiKey: process.env.SEMANTIC_SCHOLAR_API_KEY?.trim() ?? "",
   googleSearchApiKey: process.env.GOOGLE_SEARCH_API_KEY?.trim() ?? "",
   googleSearchCx: process.env.GOOGLE_SEARCH_CX?.trim() ?? "",
+  storageDriver: process.env.STORAGE_DRIVER?.trim().toLowerCase() === "drive" ? "drive" : "supabase",
+  googleServiceAccountJson: process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim() ?? "",
+  googleDriveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID?.trim() ?? "",
 };

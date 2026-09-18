@@ -109,6 +109,11 @@
 ## Bloco L — Busca inteligente (CONCLUÍDO e validado)
 - [x] Período em linguagem natural + nota com desfazer
 
+## Drive como storage (CONCLUÍDO no código)
+- [x] Interface + drivers + `/bytes` + testes (88 no total)
+- [ ] Conta de serviço + pasta compartilhada + envs (usuário)
+- [ ] Validar upload/leitura no Drive real
+
 ## Bloco M — Auditoria final (CONCLUÍDO)
 - [x] lint, typecheck, 75 testes, build, E2E ponta a ponta, a11y, mobile, segurança
 

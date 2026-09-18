@@ -395,6 +395,12 @@
 - **Ressalva:** crédito agregado permanece no rodapé ("publicadores de origem"); atribuição formal por fonte foi retirada a pedido do usuário.
 - **Impacto:** E2E confirma zero nomes expostos nas 3 telas; 83 testes; build OK.
 
+## 18/09/2026 — Storage plugável (Supabase + Google Drive)
+
+### D75. Interface única, Drive via REST sem dependências
+- **Decisão:** `lib/armazenamento` (interface + drivers + seleção por env); Drive com JWT RS256 via stdlib, escopo mínimo `drive.file`, pasta compartilhada; leitura sempre pela rota interna `/bytes` (sem CORS/telas do Google); `storage_path` com prefixo `drive:`.
+- **Impacto:** 88 testes; E2E em modo supabase sem regressão; Drive real pendente das credenciais do usuário.
+
 ## 18/09/2026 — Só arquivos baixáveis por padrão
 
 ### D74. soPdf padrão via select explícito (sem checkbox ambíguo)
