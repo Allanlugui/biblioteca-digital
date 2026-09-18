@@ -46,10 +46,16 @@ export function FiltrosBusca({ valores }: { valores: BuscaQuery }) {
               <option value="article">Artigo</option>
               <option value="preprint">Preprint</option>
             </select>
-            <label className="mt-3 inline-flex cursor-pointer items-center gap-1.5 text-sm">
-              <input type="checkbox" name="soPdf" value="true" defaultChecked={valores.soPdf === true} className="h-4 w-4 accent-[#184636]" />
-              Só com PDF
-            </label>
+            <label htmlFor="filtro-arquivos" className="mt-3 block text-sm font-semibold">Arquivos</label>
+            <select
+              id="filtro-arquivos"
+              name="soPdf"
+              defaultValue={valores.soPdf === false ? "false" : "true"}
+              className="mt-2 w-full rounded-md border border-rule bg-parchment px-3 py-2 outline-none focus-visible:border-library-700"
+            >
+              <option value="true">Só para baixar e ler</option>
+              <option value="false">Todos os registros</option>
+            </select>
           </div>
           <div>
             <label htmlFor="filtro-ordem" className="block text-sm font-semibold">Ordenar por</label>

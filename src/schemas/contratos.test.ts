@@ -28,6 +28,12 @@ describe("buscaQuerySchema", () => {
     expect(buscaQuerySchema.safeParse({ q: "quantum", limite: "abc" }).success).toBe(false);
   });
 
+  it("converte soPdf explícito", () => {
+    expect(buscaQuerySchema.safeParse({ q: "quantum", soPdf: "true" }).data?.soPdf).toBe(true);
+    expect(buscaQuerySchema.safeParse({ q: "quantum", soPdf: "false" }).data?.soPdf).toBe(false);
+    expect(buscaQuerySchema.safeParse({ q: "quantum" }).data?.soPdf).toBeUndefined();
+  });
+
   it("aceita filtros válidos e aplica padrões ausentes", () => {
     const parsed = buscaQuerySchema.safeParse({
       q: "quantum",

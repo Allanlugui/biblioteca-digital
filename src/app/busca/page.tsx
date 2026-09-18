@@ -47,13 +47,15 @@ export default async function BuscaPage({ searchParams }: PageProps<"/busca">) {
     }
   }
   if (!query.has("q")) query.set("q", parsed.data.q);
+  // Padrão da casa: só arquivos para baixar e ler (opt-out explícito).
+  const soPdf = parsed.data.soPdf ?? true;
   query.set("limite", String(parsed.data.limite ?? 20));
   query.set("pagina", String(parsed.data.pagina ?? 1));
   if (anoDe) query.set("anoDe", anoDe);
   if (anoAte) query.set("anoAte", anoAte);
   for (const f of parsed.data.fonte ?? []) query.append("fonte", f);
   if (parsed.data.tipo) query.set("tipo", parsed.data.tipo);
-  if (parsed.data.soPdf) query.set("soPdf", "true");
+  query.set("soPdf", String(soPdf));
   if (parsed.data.ordem) query.set("ordem", parsed.data.ordem);
   const queryString = query.toString();
   return (

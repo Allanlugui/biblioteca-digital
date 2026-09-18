@@ -395,6 +395,12 @@
 - **Ressalva:** crédito agregado permanece no rodapé ("publicadores de origem"); atribuição formal por fonte foi retirada a pedido do usuário.
 - **Impacto:** E2E confirma zero nomes expostos nas 3 telas; 83 testes; build OK.
 
+## 18/09/2026 — Só arquivos baixáveis por padrão
+
+### D74. soPdf padrão via select explícito (sem checkbox ambíguo)
+- **Decisão:** filtro "Arquivos" (Só para baixar e ler / Todos os registros), padrão true aplicado na page; checkbox descartado porque desmarcado some da URL e quebrava a consistência.
+- **Impacto:** E2E (0 sem-PDF no padrão, 83 no opt-out); API inalterada; 84 testes.
+
 ## 18/09/2026 — Auth e-mail + senha (pós-diagnóstico)
 
 ### D70. Login principal com senha; magic link secundário
