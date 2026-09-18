@@ -1,7 +1,7 @@
 # Status do Projeto: biblioteca-digital 
 - **Data de Criação:** 16/09/2026 17:06:37,33 
 - **Data de Atualização:** 18/09/2026
-- **Estado Atual:** COMMIT INICIAL CRIADO — repo git local com 69 arquivos, working tree limpo. Falta: conectar remoto GitHub e importar na Vercel.
+- **Estado Atual:** NO GITHUB — `origin/master` sincronizado (`github.com/Allanlugui/biblioteca-digital`). Falta: importar na Vercel.
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 
 ---
@@ -309,3 +309,4 @@ Detalhamento das tarefas em `memory/TODO.md`.
 * Revalidado antes do commit: `typecheck` ✅ | `lint` ✅ | `test` 31/31 ✅ | `build` ✅ (tabela de rotas idêntica à documentada).
 * Correções aplicadas: `.gitignore` com `!.env.example` (o pattern `.env*` o excluía) e `.obsidian/` ignorado; 4 `.gitkeep` obsoletos removidos.
 * Pendente: `git remote add origin <url>` + `git push -u origin master`, depois importar na Vercel pelo painel.
+* 18/09/2026 — push executado: remoto `origin` = `github.com/Allanlugui/biblioteca-digital`, branch `master` com upstream configurado. Próximo: import na Vercel.
