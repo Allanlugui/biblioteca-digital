@@ -187,3 +187,4 @@
 - **Contexto:** resolvido o 500, o gargalo passou a ser a cota do mailer embutido.
 - **Solução:** configurar SMTP próprio em Auth → Email → SMTP. Recomendado Resend (grátis generoso, feito para transacional); alternativa Gmail com senha de app (limite ~500/dia).
 - **Escolha do usuário:** Resend (aguardando configuração no painel).
+- **RESOLVIDO:** SMTP configurado e funcionando; `/entrar` em produção exibe login com senha + magic link secundário (confirmado via fetch).
