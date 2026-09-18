@@ -115,6 +115,7 @@
 ## Pendências do usuário (fora do código)
 - [ ] Migrations 0002 + 0003 no SQL Editor
 - [ ] Envs Supabase (+ Google/S2 quando quiser) na Vercel
+- [ ] Verificar SMTP e Redirect URLs no dashboard Supabase Auth (diagnóstico P29)
 - [ ] Teste do magic link em produção
 
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)

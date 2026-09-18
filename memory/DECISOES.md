@@ -376,6 +376,11 @@
 - **Decisão:** `lib/linguagem-natural.ts` (depois de/desde/antes de/entre/últimos N anos/último ano) + aplicação na /busca só sem filtro explícito, com nota visível e "Desfazer".
 - **Impacto:** 75 testes; E2E real (nota + 31 resultados ≥2024, zero erros).
 
+## 18/09/2026 — Diagnóstico magic link (sem código alterado)
+
+### D68. 500 no /auth/v1/otp atribuído ao provedor de e-mail, não ao código
+- **Decisão:** não alterar código; auditoria completa (login, clients, callback, proxy, envs) sem achados; correção esperada no painel Supabase (SMTP + Redirect URLs).
+
 ## 18/09/2026 — Bloco M (Auditoria final)
 
 ### D67. Veredito: sem regressões nem críticos

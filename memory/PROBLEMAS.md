@@ -167,3 +167,10 @@
 ### P28. Ingest carrega o PDF inteiro em memória (limite 50MB) — LIMITAÇÃO DECLARADA
 - **Contexto:** upload ao Storage exige bytes (hash + upload); stream validado já impõe o teto.
 - **Mitigação:** `PROXY_MAX_SIZE_BYTES` configurável; arquivos acima do teto recusados com 413 antes do buffer.
+
+## 18/09/2026 — Diagnóstico magic link (HTTP 500 no Supabase)
+
+### P29. POST /auth/v1/otp retorna 500 — causa provável no provedor de e-mail
+- **Evidência:** o 500 vem da API do próprio Supabase (`supabase.co/auth/v1/otp`), antes de qualquer rota nossa; código auditado e correto (`entrar/page.tsx:20`, callback `/auth/callback` confere); parâmetros inválidos gerariam 400/422, não 500.
+- **Ação:** verificar SMTP/logs no dashboard Auth (passo a passo entregue); sem acesso aos logs internos — limitação declarada.
+- **Status:** AGUARDANDO verificação no painel.
