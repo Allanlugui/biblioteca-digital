@@ -253,3 +253,19 @@
 ### D45. Auditoria pt-BR + página 404 temática
 - **Decisão:** varredura de strings visíveis em inglês — só havia código interno (nomes de componentes) e a 404 padrão do Next em inglês; criado `not-found.tsx` ("Esta página saiu da estante").
 - **Impacto:** todo texto visível em pt-BR; `lang="pt-BR"` já existia.
+
+## 18/09/2026 — Fase 8 (Volta da busca + erros amigáveis + Semantic Scholar)
+
+### D46. "Voltar aos resultados" preserva a consulta via URL
+- **Decisão:** `ResultCard` liga para `/documento/{id}?de={consulta}`; a página do documento valida `de` com `buscaQuerySchema` e o Voltar aponta para `/busca?q={de}` (ou `/busca` sem origem).
+- **Motivo:** o Voltar antigo ia para `/busca` vazia e a pesquisa "sumia"; query na URL é compartilhável e sobrevive a reload.
+- **Impacto:** validado em E2E real (volta com `q` preservado, 20 cards, zero erros).
+
+### D47. Mensagens amigáveis para 400/502 no leitor
+- **Decisão:** `mensagemAmigavel()` traduz o erro cru do PDF.js ("Unexpected server response (400/502)") para orientação em pt-BR apontando o botão de origem.
+- **Impacto:** só apresentação do erro; sem mudança de comportamento HTTP.
+
+### D48. Provider Semantic Scholar (4ª fonte)
+- **Decisão:** `semanticscholar.ts` no padrão `SearchProvider` (Zod, `paraHttps` no PDF, ids `semantic-scholar_{paperId-hex40}`); registrado no agregador e em `documentos.ts`; env opcional `SEMANTIC_SCHOLAR_API_KEY` via header `x-api-key` (extensão retrocompatível de `fetchTexto`).
+- **Contexto:** pedido de busca "universal"; S2 (~200M obras, inclui editoras fora das 3 fontes) é o maior passo sem chave obrigatória. Busca 100% da web exigiria API web com chave paga (Brave/Google) — fora do escopo sem decisão do usuário.
+- **Impacto:** 3 testes novos com fetch mockado (39/39); integração real pendente de cota (P24); README e `.env.example` atualizados.

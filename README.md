@@ -1,6 +1,6 @@
 # Biblioteca Digital
 
-Busca agregada de documentos científicos (OpenAlex, arXiv, DOAJ) com
+Busca agregada de documentos científicos (OpenAlex, arXiv, DOAJ, Semantic Scholar) com
 download direto de PDFs e leitor integrado no navegador.
 
 Stack: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS v4 +
@@ -43,6 +43,7 @@ possuem fallback seguro — nenhum segredo é obrigatório para rodar localmente
 | `SEARCH_TIMEOUT_MS`          | `15000`| Timeout por provider de busca (ms)               |
 | `SEARCH_CACHE_TTL_MS`        | `300000` | TTL do cache de busca (5 min)                  |
 | `OPENALEX_MAILTO`            | `` (vazio) | E-mail para o pool educado do OpenAlex (opcional) |
+| `SEMANTIC_SCHOLAR_API_KEY`   | `` (vazio) | Chave gratuita do Semantic Scholar (opcional; sem ela, 100 req/5min por IP) |
 
 ## API
 

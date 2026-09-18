@@ -52,6 +52,7 @@ export async function fetchTexto(
   url: string,
   fonte: string,
   signal?: AbortSignal,
+  cabecalhos?: Record<string, string>,
 ): Promise<string> {
   const { signal: scoped, cancelar } = withTimeout(signal);
   try {
@@ -60,6 +61,7 @@ export async function fetchTexto(
       headers: {
         "User-Agent": userAgent(),
         Accept: "application/json, application/atom+xml, application/xml, text/xml;q=0.9, */*;q=0.1",
+        ...cabecalhos,
       },
     });
     const texto = await response.text();

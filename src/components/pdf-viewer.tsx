@@ -10,6 +10,17 @@ const ESCALA = 1.5;
 
 type EstadoLeitor = "loading" | "ready" | "error";
 
+function mensagemAmigavel(erro: unknown): string {
+  const original = erro instanceof Error ? erro.message : "Falha ao carregar o PDF.";
+  if (original.includes("(400)")) {
+    return "O endereço do arquivo não foi aceito pelo serviço. Abra o PDF na origem.";
+  }
+  if (original.includes("(502)")) {
+    return "A fonte não retornou um PDF válido (pode ser uma página comum, não o arquivo). Abra o PDF na origem.";
+  }
+  return original;
+}
+
 export function PdfViewer({ urlPdf }: { urlPdf: string }) {
   const palcoRef = useRef<HTMLDivElement | null>(null);
   const docRef = useRef<PDFDocumentProxy | null>(null);
@@ -43,7 +54,7 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
       } catch (error) {
         if (!cancelado) {
           setEstado("error");
-          setMensagem(error instanceof Error ? error.message : "Falha ao carregar o PDF.");
+          setMensagem(mensagemAmigavel(error));
         }
       }
     })();

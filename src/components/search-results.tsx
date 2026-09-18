@@ -17,7 +17,7 @@ export function SearchResults({ consulta, limite }: { consulta: string; limite: 
         <span className="block">A disponibilidade de PDF pode variar entre as fontes.</span>
       </p>
       <div className="grid gap-5 md:grid-cols-2">
-        {estado.data.documentos.map((documento) => <ResultCard key={documento.id} documento={documento} />)}
+        {estado.data.documentos.map((documento) => <ResultCard key={documento.id} documento={documento} consulta={consulta} />)}
       </div>
     </section>
   );

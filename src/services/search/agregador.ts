@@ -3,9 +3,10 @@ import type { Documento, ResultadoBusca } from "@/types";
 import { arxivProvider } from "./arxiv";
 import { doajProvider } from "./doaj";
 import { openalexProvider } from "./openalex";
+import { semanticScholarProvider } from "./semanticscholar";
 import type { SearchProvider } from "./types";
 
-const providers: SearchProvider[] = [openalexProvider, arxivProvider, doajProvider];
+const providers: SearchProvider[] = [openalexProvider, arxivProvider, doajProvider, semanticScholarProvider];
 
 type EntradaCache = {
   expiraEm: number;

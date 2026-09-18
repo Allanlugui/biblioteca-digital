@@ -7,6 +7,7 @@ export type ServerConfig = {
   searchTimeoutMs: number;
   searchCacheTtlMs: number;
   openalexMailto: string;
+  semanticScholarApiKey: string;
 };
 
 function readPositiveInt(name: string, fallback: number): number {
@@ -34,4 +35,5 @@ export const config: ServerConfig = {
   searchTimeoutMs: readPositiveInt("SEARCH_TIMEOUT_MS", 15_000),
   searchCacheTtlMs: readPositiveInt("SEARCH_CACHE_TTL_MS", 300_000),
   openalexMailto: process.env.OPENALEX_MAILTO?.trim() ?? "",
+  semanticScholarApiKey: process.env.SEMANTIC_SCHOLAR_API_KEY?.trim() ?? "",
 };

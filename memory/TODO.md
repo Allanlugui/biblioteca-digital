@@ -34,3 +34,17 @@
 - [x] Variáveis ambientais documentadas em `.env.example`
 - [x] Preparar deploy (Vercel) e validar variáveis de ambiente
 - [x] Atualizar `memory/DECISOES.md`, `memory/PROBLEMAS.md` e `memory/STATUS.md`
+
+## Fase 6 — Redesign UI (CONCLUÍDA)
+- [x] Identidade "sala de leitura" (Fraunces, papel, verde-biblioteca, dourado)
+- [x] Home com hero, exemplos clicáveis, fontes e passos
+- [x] Fichas catalográficas na busca e no documento
+
+## Fase 7 — Leitor-livro + pt-BR (CONCLUÍDA)
+- [x] Leitor paginado com deslizamento, slider, teclado e swipe
+- [x] Auditoria pt-BR + página 404 temática
+
+## Fase 8 — Volta da busca + Semantic Scholar (CONCLUÍDA)
+- [x] "Voltar aos resultados" preserva a consulta via URL
+- [x] Mensagens amigáveis para 400/502 no leitor
+- [x] Provider Semantic Scholar + `SEMANTIC_SCHOLAR_API_KEY` opcional

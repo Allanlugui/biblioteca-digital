@@ -2,15 +2,17 @@ import type { Documento } from "@/types";
 import { arxivProvider } from "./search/arxiv";
 import { doajProvider } from "./search/doaj";
 import { openalexProvider } from "./search/openalex";
+import { semanticScholarProvider } from "./search/semanticscholar";
 import type { SearchProvider, SearchProviderId } from "./search/types";
 
 const providers: Record<SearchProviderId, SearchProvider> = {
   openalex: openalexProvider,
   arxiv: arxivProvider,
   doaj: doajProvider,
+  "semantic-scholar": semanticScholarProvider,
 };
 
-const ID_DOCUMENTO = /^(openalex|arxiv|doaj)_(.+)$/;
+const ID_DOCUMENTO = /^(openalex|arxiv|doaj|semantic-scholar)_(.+)$/;
 
 export async function buscarDocumentoPorId(id: string): Promise<Documento | null> {
   const match = ID_DOCUMENTO.exec(id);

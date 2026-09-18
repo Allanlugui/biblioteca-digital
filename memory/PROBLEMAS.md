@@ -132,3 +132,15 @@
 - **Causa:** o guard anti-SSRF só aceita https; OpenAlex e DOAJ repassavam `urlPdf` em http (`somenteHttp`), então `/api/proxy` devolvia 400 e `/api/download` falharia no `fetchPinned` (502). O arXiv já normalizava com `paraHttps`.
 - **Resolução:** `urlPdf` de OpenAlex e DOAJ passa por `paraHttps` (https); `urlPagina` continua como link exibível; assinatura de `paraHttps` alargada para `string | null | undefined` (campos `.nullish()` do Zod); novo `http.test.ts` com 5 testes.
 - **NÃO VALIDADO:** fetch real desse PDF da USP (rede local não alcança o host — curl timeout); confirmar no deploy Vercel.
+
+## 18/09/2026 — Fase 8
+
+### P23. PDF da PUCRS (OJS) retorna 502: URL é página HTML, não o arquivo — MITIGADO
+- **Sintoma:** leitor exibiu 502 para `revistaseletronicas.pucrs.br/ojs/.../article/view/22354/13650` (via OpenAlex).
+- **Causa:** a URL informa uma página de artigo OJS (HTML), não o PDF direto (`/download/...`); `fetchPdf` rejeita o MIME corretamente.
+- **Ação:** sem reescrita automática de URL (frágil e específica de site); o leitor agora exibe mensagem amigável orientando a abrir o PDF na origem, onde o botão "Abrir PDF na origem" já existe.
+- **Pendente:** avaliar ocorrência em produção; se OJS for recorrente, considerar fallback `/view/` → `/download/`.
+
+### P24. Semantic Scholar retorna 429 sem chave em IPs compartilhados — LIMITAÇÃO DOCUMENTADA
+- **Sintoma:** `curl` direto à API S2 devolveu 429 (cota de 100 req/5min por IP estourada).
+- **Mitigação:** falha isolada por provider (busca segue com as demais fontes); env opcional `SEMANTIC_SCHOLAR_API_KEY` (gratuita) eleva a cota; documentado no README e `.env.example`.
