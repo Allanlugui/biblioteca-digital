@@ -186,3 +186,4 @@
 ### P31. Remetente padrão limitado a ~2 e-mails/hora — usar SMTP próprio
 - **Contexto:** resolvido o 500, o gargalo passou a ser a cota do mailer embutido.
 - **Solução:** configurar SMTP próprio em Auth → Email → SMTP. Recomendado Resend (grátis generoso, feito para transacional); alternativa Gmail com senha de app (limite ~500/dia).
+- **Escolha do usuário:** Resend (aguardando configuração no painel).
