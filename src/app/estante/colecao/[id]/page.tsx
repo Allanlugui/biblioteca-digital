@@ -6,7 +6,7 @@ import { formatarData, nomesFontes } from "@/lib/apresentacao";
 import { criarClienteServidor, supabaseLeituraConfigurado } from "@/lib/supabase/servidor";
 import type { Fonte } from "@/types";
 
-export const metadata: Metadata = { title: "Coleção | Biblioteca Digital" };
+export const metadata: Metadata = { title: "Coleção" };
 
 export default async function ColecaoPage({ params }: PageProps<"/estante/colecao/[id]">) {
   const { id } = await params;

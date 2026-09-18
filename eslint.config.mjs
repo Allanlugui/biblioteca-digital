@@ -22,6 +22,8 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // Worker minificado do PDF.js servido como asset estático.
     "public/**/*.mjs",
+    // Service Worker estático (JS puro de navegador, fora do bundle).
+    "public/sw.js",
   ]),
 ]);
 

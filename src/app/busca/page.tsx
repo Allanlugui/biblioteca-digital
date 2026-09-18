@@ -5,7 +5,7 @@ import { SearchResults } from "@/components/search-results";
 import { EmptyState } from "@/components/query-states";
 import { buscaQuerySchema } from "@/schemas/busca";
 
-export const metadata: Metadata = { title: "Busca | Biblioteca Digital" };
+export const metadata: Metadata = { title: "Busca" };
 
 export default async function BuscaPage({ searchParams }: PageProps<"/busca">) {
   const parametros = await searchParams;

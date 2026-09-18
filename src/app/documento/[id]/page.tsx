@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { DocumentoClient } from "@/components/documento-client";
 
-export const metadata: Metadata = { title: "Documento | Biblioteca Digital" };
+export const metadata: Metadata = { title: "Documento" };
 
 function voltarSeguro(valor: unknown): string {
   if (typeof valor !== "string") return "/busca";

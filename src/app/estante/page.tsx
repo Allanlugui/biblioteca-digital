@@ -6,7 +6,7 @@ import { formatarData, nomesFontes } from "@/lib/apresentacao";
 import { criarClienteServidor, supabaseLeituraConfigurado } from "@/lib/supabase/servidor";
 import type { Fonte } from "@/types";
 
-export const metadata: Metadata = { title: "Minha estante | Biblioteca Digital" };
+export const metadata: Metadata = { title: "Minha estante" };
 
 type ItemEstante = {
   salvoEm: string;

@@ -1,7 +1,7 @@
 # Status do Projeto: biblioteca-digital 
 - **Data de Criação:** 16/09/2026 17:06:37,33 
 - **Data de Atualização:** 18/09/2026
-- **Estado Atual:** BLOCO I CONCLUÍDO E VALIDADO — header mobile, overflow zero (70 testes, build, screenshots 390px OK). A caminho do deploy.
+- **Estado Atual:** BLOCO J CONCLUÍDO E VALIDADO — PWA + SEO (70 testes, build, artefatos OK). A caminho do deploy.
 - **Pendente futuro:** busca web 100% universal exige API com chave (Berc brave/Google) — decisão do usuário; confirmar S2 real em produção (P24).
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 

@@ -357,3 +357,9 @@
 - **Decisão:** `web.ts` no padrão `SearchProvider` (filtro `filetype:pdf`, aceita só item com mime/formato/extensão PDF, `urlPdf` em https); ids `web_{sha256-32}` estáveis via persistência no acervo no momento da busca; registro condicional (`webDisponivel()`) no agregador e em `documentos.ts`; `Fonte`/`SearchProviderId`/nomes/schemas estendidos.
 - **Motivo:** "toda a web" exige índice web profissional; CSE é o único com filtro e formato oficiais; sem chave a fonte some silenciosamente e as 4 abertas seguem.
 - **Impacto:** 4 testes novos com mocks (46/46, sem tocar no banco); funcional real pendente da chave (P27); rodapé/home/README atualizados para 5 fontes.
+
+## 18/09/2026 — Bloco J (PWA + SEO)
+
+### D64. PWA instalável sem offline de dados + SEO técnico
+- **Decisão:** `manifest.ts`, `icon.svg` (Next gera favicon/apple-touch), SW mínimo (network-first navegação com fallback /, cache-first estáticos, nunca /api nem cross-origin) + `SwRegister` só em produção; `robots.ts` (bloqueia /api, /auth, /estante), `sitemap.ts` (só rotas estáveis), metadataBase + OG/Twitter + theme-color + JSON-LD WebSite; títulos com template.
+- **Impacto:** artefatos validados com MIME correto; sem SW de PDFs externos (direitos/tamanho) nem sitemap massivo.

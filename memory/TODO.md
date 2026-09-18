@@ -99,6 +99,9 @@
 - [x] Header mobile compacto, overflow-x zerado, screenshots 390px
 - [x] Dark mode avaliado e descartado (identidade clara)
 
+## Bloco J — PWA + SEO (CONCLUÍDO e validado)
+- [x] Manifest, ícone, SW mínimo, robots, sitemap, OG, JSON-LD
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

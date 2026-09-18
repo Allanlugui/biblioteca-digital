@@ -47,6 +47,18 @@ const PASSOS = [
 export default function Home() {
   return (
     <main id="conteudo" className="flex-1">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: "Biblioteca Digital",
+            inLanguage: "pt-BR",
+            url: "https://biblioteca-digital-nine.vercel.app/",
+          }),
+        }}
+      />
       {/* Hero — salão de leitura */}
       <section className="border-b border-rule bg-library-950 text-parchment">
         <div className="paper-texture mx-auto w-full max-w-6xl px-6 pb-16 pt-14 sm:pb-20 sm:pt-20">
