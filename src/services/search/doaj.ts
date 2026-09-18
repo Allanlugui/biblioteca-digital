@@ -113,6 +113,8 @@ function mapear(artigo: Artigo): Documento | null {
     assuntos,
     idioma: normalizarIdioma(bibjson?.journal?.language?.[0]),
     tipo: "article",
+    arxivId: null,
+    disponivelEm: [{ fonte: "doaj", id: `doaj_${artigo.id}` }],
   };
 }
 

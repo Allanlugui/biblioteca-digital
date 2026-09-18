@@ -71,6 +71,10 @@
 - [x] Aviso de fontes indisponíveis + volta com filtros preservados
 - [x] Cards com DOI, citações e assuntos
 
+## Bloco C — Deduplicação (CONCLUÍDO e validado)
+- [x] Camadas DOI → arXivId → URL → obra conservadora
+- [x] Merge com `disponivelEm` + selo "Disponível em N fontes"
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

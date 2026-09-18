@@ -16,6 +16,8 @@ function doc(parcial: Partial<Documento> & { id: string; titulo: string }): Docu
     assuntos: [],
     idioma: null,
     tipo: null,
+    arxivId: null,
+    disponivelEm: [],
     ...parcial,
   };
 }
@@ -29,12 +31,12 @@ describe("normalizarTitulo", () => {
 });
 
 describe("deduplicar", () => {
-  it("remove títulos equivalentes de fontes diferentes", () => {
+  it("não funde só por título curto sem identificadores (anti falso positivo)", () => {
     const docs = [
       doc({ id: "openalex_W1", titulo: "Quantum Computing", urlPdf: "https://a/x.pdf" }),
       doc({ id: "arxiv_1", titulo: "quantum computing!", urlPdf: "https://b/y.pdf" }),
     ];
-    expect(deduplicar(docs).map((d) => d.id)).toEqual(["openalex_W1"]);
+    expect(deduplicar(docs).map((d) => d.id)).toEqual(["openalex_W1", "arxiv_1"]);
   });
 
   it("remove PDFs idênticos mesmo com títulos diferentes", () => {
@@ -51,6 +53,46 @@ describe("deduplicar", () => {
       doc({ id: "arxiv_1", titulo: "Título B" }),
     ];
     expect(deduplicar(docs)).toHaveLength(2);
+  });
+
+  it("funde pelo DOI e soma as fontes, preenchendo falhas", () => {
+    const docs = [
+      doc({ id: "openalex_W1", fonte: "openalex", titulo: "Mesma Obra", doi: "10.1/abc", citacoes: 10, urlPdf: null }),
+      doc({ id: "doaj_1", fonte: "doaj", titulo: "Mesma Obra", doi: "10.1/abc", citacoes: null, urlPdf: "https://a/x.pdf" }),
+    ];
+    const [unico] = deduplicar(docs);
+    expect(deduplicar(docs)).toHaveLength(1);
+    expect(unico?.disponivelEm.map((f) => f.fonte)).toEqual(["openalex", "doaj"]);
+    expect(unico?.citacoes).toBe(10);
+    expect(unico?.urlPdf).toBe("https://a/x.pdf");
+    expect(unico?.doi).toBe("10.1/abc");
+  });
+
+  it("funde pelo arXivId entre OpenAlex e arXiv", () => {
+    const docs = [
+      doc({ id: "openalex_W1", titulo: "Paper Quântico", arxivId: "2211.02350" }),
+      doc({ id: "arxiv_2211.02350v1", titulo: "Paper Quântico Diferente?", arxivId: "2211.02350" }),
+    ];
+    const resultado = deduplicar(docs);
+    expect(resultado).toHaveLength(1);
+    expect(resultado[0]?.disponivelEm).toHaveLength(2);
+  });
+
+  it("não funde títulos curtos ou sem autor/ano (anti falso positivo)", () => {
+    const docs = [
+      doc({ id: "a", titulo: "Quantum" }),
+      doc({ id: "b", titulo: "Quantum" }),
+    ];
+    expect(deduplicar(docs)).toHaveLength(2);
+  });
+
+  it("funde pela camada conservadora título+autor+ano", () => {
+    const titulo = "Uma investigação profunda sobre computação quântica aplicada";
+    const docs = [
+      doc({ id: "a", titulo, autores: ["Ada Lovelace"], dataPublicacao: "2023-05-01" }),
+      doc({ id: "b", titulo: titulo.toUpperCase(), autores: ["ada lovelace"], dataPublicacao: "2023-11-20" }),
+    ];
+    expect(deduplicar(docs)).toHaveLength(1);
   });
 });
 

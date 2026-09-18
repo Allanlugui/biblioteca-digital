@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { limparLista, normalizarContagem, normalizarDoi, normalizarIdioma } from "@/services/search/normalizar";
+import { limparLista, normalizarArxivId, normalizarContagem, normalizarDoi, normalizarIdioma } from "@/services/search/normalizar";
 
 describe("normalizarDoi", () => {
   it("extrai o núcleo de URLs e prefixos", () => {
@@ -38,5 +38,15 @@ describe("normalizarContagem", () => {
     expect(normalizarContagem(-1)).toBeNull();
     expect(normalizarContagem(1.5)).toBeNull();
     expect(normalizarContagem(null)).toBeNull();
+  });
+});
+
+describe("normalizarArxivId", () => {
+  it("canoniza sem versão e com URLs", () => {
+    expect(normalizarArxivId("2211.02350v1")).toBe("2211.02350");
+    expect(normalizarArxivId("https://arxiv.org/abs/2211.02350v2")).toBe("2211.02350");
+    expect(normalizarArxivId("hep-ex/0307015v1")).toBe("hep-ex/0307015");
+    expect(normalizarArxivId(null)).toBeNull();
+    expect(normalizarArxivId("não-é-id")).toBeNull();
   });
 });

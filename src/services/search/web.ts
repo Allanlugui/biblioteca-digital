@@ -65,6 +65,8 @@ function mapear(item: Item): Documento | null {
     assuntos: [],
     idioma: null,
     tipo: null,
+    arxivId: null,
+    disponivelEm: [{ fonte: "web", id: idParaLink(link) }],
   };
 }
 
@@ -146,6 +148,8 @@ export const webProvider: SearchProvider = {
         assuntos: Array.isArray(data.assuntos) ? data.assuntos.filter((a): a is string => typeof a === "string") : [],
         idioma: typeof data.idioma === "string" ? data.idioma : null,
         tipo: typeof data.tipo === "string" ? data.tipo : null,
+        arxivId: null,
+        disponivelEm: [{ fonte: "web", id: data.id }],
       };
     } catch {
       return null;

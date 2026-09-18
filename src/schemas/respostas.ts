@@ -1,10 +1,12 @@
 import { z } from "zod";
 
+export const fonteSchema = z.enum(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar", "web"]);
+
 export const documentoRespostaSchema = z.object({
   id: z.string(),
   titulo: z.string(),
   autores: z.array(z.string()),
-  fonte: z.enum(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar", "web"]),
+  fonte: fonteSchema,
   urlPdf: z.string().nullable(),
   urlPagina: z.string().nullable(),
   descricao: z.string().nullable(),
@@ -15,6 +17,8 @@ export const documentoRespostaSchema = z.object({
   assuntos: z.array(z.string()),
   idioma: z.string().nullable(),
   tipo: z.string().nullable(),
+  arxivId: z.string().nullable(),
+  disponivelEm: z.array(z.object({ fonte: fonteSchema, id: z.string() })),
 });
 
 export const buscaRespostaSchema = z.object({

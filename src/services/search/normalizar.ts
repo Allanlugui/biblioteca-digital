@@ -34,3 +34,21 @@ export function limparLista(valores: (string | null | undefined)[], maximo = 10)
 export function normalizarContagem(valor: number | null | undefined): number | null {
   return typeof valor === "number" && Number.isInteger(valor) && valor >= 0 ? valor : null;
 }
+
+const ARXIV_NOVO = /^(\d{4}\.\d{4,5})(v\d+)?$/i;
+const ARXIV_ANTIGO = /^([a-z-]+\/\d{7})(v\d+)?$/i;
+
+// Normaliza id do arXiv para a forma canônica sem versão (v1/v2 = mesma obra).
+export function normalizarArxivId(valor: string | null | undefined): string | null {
+  if (!valor) return null;
+  let id = valor.trim();
+  const marcador = "/abs/";
+  const posicao = id.toLowerCase().lastIndexOf(marcador);
+  if (posicao !== -1) id = id.slice(posicao + marcador.length);
+  id = id.replace(/\.pdf(\?.*)?$/i, "").trim().toLowerCase();
+  const novo = ARXIV_NOVO.exec(id);
+  if (novo) return novo[1] ?? null;
+  const antigo = ARXIV_ANTIGO.exec(id);
+  if (antigo) return antigo[1] ?? null;
+  return null;
+}

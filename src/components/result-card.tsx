@@ -13,6 +13,9 @@ export function ResultCard({ documento, voltar }: { documento: Documento; voltar
         ) : (
           <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Sem PDF direto</span>
         )}
+        {documento.disponivelEm.length > 1 && (
+          <span className="rounded-sm bg-library-100 px-2.5 py-1 uppercase tracking-wider text-library-800">Disponível em {documento.disponivelEm.length} fontes</span>
+        )}
       </div>
       <h2 className="break-words font-display text-2xl leading-snug">
         <Link prefetch={false} href={ficha} className="rounded hover:text-library-700 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">

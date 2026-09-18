@@ -22,4 +22,7 @@ export type Documento = {
   assuntos: string[];
   idioma: string | null;
   tipo: string | null;
+  // Bloco C: identificadores para dedup e agrupamento de fontes.
+  arxivId: string | null;
+  disponivelEm: { fonte: Fonte; id: string }[];
 };

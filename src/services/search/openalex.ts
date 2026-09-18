@@ -2,11 +2,11 @@ import { z } from "zod";
 import { config } from "@/lib/config";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
-import { limparLista, normalizarContagem, normalizarDoi, normalizarIdioma } from "./normalizar";
+import { limparLista, normalizarArxivId, normalizarContagem, normalizarDoi, normalizarIdioma } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://api.openalex.org/works";
-const CAMPOS = "id,display_name,doi,publication_date,authorships,open_access,best_oa_location,cited_by_count,concepts,language,type";
+const CAMPOS = "id,display_name,doi,publication_date,authorships,open_access,best_oa_location,cited_by_count,concepts,language,type,ids";
 
 const autoriaSchema = z.object({
   author: z
@@ -37,6 +37,7 @@ const obraSchema = z.object({
   concepts: z.array(conceitoSchema).nullish(),
   language: z.string().nullish(),
   type: z.string().nullish(),
+  ids: z.object({ arxiv: z.string().nullish() }).nullish(),
 });
 
 type Obra = z.infer<typeof obraSchema>;
@@ -81,6 +82,8 @@ function mapear(obra: Obra): Documento | null {
     assuntos: limparLista((obra.concepts ?? []).map((conceito) => conceito.display_name)),
     idioma: normalizarIdioma(obra.language),
     tipo: obra.type?.trim() || null,
+    arxivId: normalizarArxivId(obra.ids?.arxiv),
+    disponivelEm: [{ fonte: "openalex", id: `openalex_${externalId}` }],
   };
 }
 

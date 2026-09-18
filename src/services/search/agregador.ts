@@ -2,6 +2,7 @@ import { config } from "@/lib/config";
 import type { Documento, FiltrosBusca, OrdemBusca, ResultadoBusca } from "@/types";
 import { arxivProvider } from "./arxiv";
 import { doajProvider } from "./doaj";
+import { normalizarArxivId } from "./normalizar";
 import { openalexProvider } from "./openalex";
 import { semanticScholarProvider } from "./semanticscholar";
 import { webDisponivel, webProvider } from "./web";
@@ -42,21 +43,76 @@ function normalizarUrl(url: string): string {
   return url.trim().toLowerCase().replace(/\/+$/, "");
 }
 
-export function deduplicar(documentos: Documento[]): Documento[] {
-  const vistos = new Set<string>();
-  const unicos: Documento[] = [];
-  for (const doc of documentos) {
-    const chaveTitulo = normalizarTitulo(doc.titulo);
-    const chave = chaveTitulo || `id:${doc.id}`;
-    const chavePdf = doc.urlPdf ? `pdf:${normalizarUrl(doc.urlPdf)}` : null;
-    if (vistos.has(chave) || (chavePdf !== null && vistos.has(chavePdf))) {
-      continue;
-    }
-    vistos.add(chave);
-    if (chavePdf !== null) vistos.add(chavePdf);
-    unicos.push(doc);
+// Camadas de identidade, da mais forte à mais fraca (conservadora).
+function arxivIdDe(doc: Documento): string | null {
+  if (doc.arxivId) return doc.arxivId;
+  if (doc.fonte === "arxiv") {
+    return normalizarArxivId(doc.id.slice("arxiv_".length).replace(/_/g, "/"));
   }
-  return unicos;
+  return null;
+}
+
+function chaveDocumento(doc: Documento): string {
+  if (doc.doi) return `doi:${doc.doi}`;
+  const arxiv = arxivIdDe(doc);
+  if (arxiv) return `arxiv:${arxiv}`;
+  if (doc.urlPdf) return `pdf:${normalizarUrl(doc.urlPdf)}`;
+  const titulo = normalizarTitulo(doc.titulo);
+  const autor = doc.autores[0] ? normalizarTitulo(doc.autores[0]) : "";
+  const ano = anoDe(doc.dataPublicacao);
+  // Conservador: exige título longo + primeiro autor + ano para não fundir obras distintas.
+  if (titulo.length >= 20 && autor && ano !== null) {
+    return `obra:${titulo}|${autor}|${ano}`;
+  }
+  return `id:${doc.id}`;
+}
+
+function comDisponivel(doc: Documento): Documento {
+  if (doc.disponivelEm.length > 0) return doc;
+  return { ...doc, disponivelEm: [{ fonte: doc.fonte, id: doc.id }] };
+}
+
+function mesclar(base: Documento, extra: Documento): Documento {
+  const assuntos = [...base.assuntos];
+  for (const assunto of extra.assuntos) {
+    if (!assuntos.some((a) => a.toLowerCase() === assunto.toLowerCase())) assuntos.push(assunto);
+  }
+  const fontes = [...base.disponivelEm];
+  for (const fonte of extra.disponivelEm) {
+    if (!fontes.some((f) => f.fonte === fonte.fonte && f.id === fonte.id)) fontes.push(fonte);
+  }
+  return {
+    ...base,
+    descricao: base.descricao ?? extra.descricao,
+    doi: base.doi ?? extra.doi,
+    citacoes: base.citacoes ?? extra.citacoes,
+    assuntos: assuntos.slice(0, 10),
+    idioma: base.idioma ?? extra.idioma,
+    tipo: base.tipo ?? extra.tipo,
+    arxivId: base.arxivId ?? extra.arxivId,
+    urlPdf: base.urlPdf ?? extra.urlPdf,
+    urlPagina: base.urlPagina ?? extra.urlPagina,
+    disponivelEm: fontes,
+  };
+}
+
+export function deduplicar(documentos: Documento[]): Documento[] {
+  const porChave = new Map<string, Documento>();
+  const ordem: string[] = [];
+  for (const cru of documentos) {
+    const doc = comDisponivel(cru);
+    const chave = chaveDocumento(doc);
+    const atual = porChave.get(chave);
+    if (!atual) {
+      porChave.set(chave, doc);
+      ordem.push(chave);
+    } else {
+      porChave.set(chave, mesclar(atual, doc));
+    }
+  }
+  return ordem
+    .map((chave) => porChave.get(chave))
+    .filter((doc): doc is Documento => doc !== undefined);
 }
 
 function termosConsulta(consulta: string): string[] {

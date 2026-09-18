@@ -2,7 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError } from "./http";
-import { limparLista, normalizarDoi } from "./normalizar";
+import { limparLista, normalizarArxivId, normalizarDoi } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://export.arxiv.org/api/query";
@@ -108,6 +108,8 @@ function mapear(entrada: Entrada): Documento | null {
     assuntos: limparLista((entrada.category ?? []).map((categoria) => categoria.term)),
     idioma: "en",
     tipo: "preprint",
+    arxivId: normalizarArxivId(externalId),
+    disponivelEm: [{ fonte: "arxiv", id: `arxiv_${sanitizarIdExterno(externalId)}` }],
   };
 }
 

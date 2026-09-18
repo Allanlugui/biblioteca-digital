@@ -2,7 +2,7 @@ import { z } from "zod";
 import { config } from "@/lib/config";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
-import { limparLista, normalizarContagem, normalizarDoi } from "./normalizar";
+import { limparLista, normalizarArxivId, normalizarContagem, normalizarDoi } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://api.semanticscholar.org/graph/v1";
@@ -25,7 +25,7 @@ const artigoSchema = z.object({
   publicationDate: z.string().nullish(),
   authors: z.array(autorSchema).nullish(),
   openAccessPdf: pdfAbertoSchema.nullish(),
-  externalIds: z.object({ DOI: z.string().nullish() }).nullish(),
+  externalIds: z.object({ DOI: z.string().nullish(), ArXiv: z.string().nullish() }).nullish(),
   citationCount: z.number().nullish(),
   fieldsOfStudy: z.array(z.string()).nullish(),
   url: z.string().nullish(),
@@ -78,6 +78,8 @@ function mapear(artigo: Artigo): Documento | null {
     assuntos: limparLista(artigo.fieldsOfStudy ?? []),
     idioma: null,
     tipo: "article",
+    arxivId: normalizarArxivId(artigo.externalIds?.ArXiv),
+    disponivelEm: [{ fonte: "semantic-scholar", id: `semantic-scholar_${artigo.paperId}` }],
   };
 }
 

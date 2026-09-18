@@ -307,6 +307,13 @@
 - **Decisão:** `anoDe/anoAte/tipo/soPdf` filtram após dedup (uniforme entre fontes, que têm capacidades distintas); `fonte` restringe providers antes da chamada (economiza quota); `ordem` (relevância/recentes/citados) pós-ordena com nulos por último; paginação com `pagina`/`limite`, buscando `pagina*limite+20` (teto 100/fonte); resposta com `total` pós-filtros, `temMais` e `fontesIndisponiveis` (exibidas na UI).
 - **Impacto:** interface `buscar` ganhou `opcoes.inicio` (dialeto por fonte); `voltar` substitui `de` preservando filtros; 55 testes.
 
+## 18/09/2026 — Bloco C (Deduplicação em camadas)
+
+### D57. Identidade em 4 camadas + merge conservador
+- **Decisão:** ordem DOI → arXivId canônico (sem versão) → URL de PDF → obra (título ≥20 + primeiro autor + ano); merge preenche nulos, une assuntos e soma `disponivelEm`; selo "Disponível em N fontes" no card.
+- **Contexto:** expostos `arxivId` (OpenAlex `ids`, S2 `externalIds.ArXiv`, arXiv canônico); `referencias` segue adiado.
+- **Impacto:** teste antigo de fusão por título curto atualizado para a regra anti-falso-positivo; 60 testes; validado na UI real (2 obras fundidas).
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário
