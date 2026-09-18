@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatarData, nomesFontes } from "@/lib/apresentacao";
+import { formatarData } from "@/lib/apresentacao";
 import type { Documento } from "@/types";
 
 export function ResultCard({ documento, voltar }: { documento: Documento; voltar: string }) {
@@ -7,16 +7,12 @@ export function ResultCard({ documento, voltar }: { documento: Documento; voltar
   return (
     <article className="flex h-full flex-col rounded-md border border-rule bg-vellum p-6 shadow-[0_1px_0_rgba(34,26,16,0.06),0_10px_24px_rgba(34,26,16,0.05)] transition-shadow hover:shadow-[0_1px_0_rgba(34,26,16,0.06),0_16px_32px_rgba(34,26,16,0.10)]">
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
-        <span className="rounded-sm bg-library-900 px-2.5 py-1 uppercase tracking-wider text-parchment">{nomesFontes[documento.fonte]}</span>
         {documento.urlPdf ? (
           <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF direto</span>
         ) : documento.urlPagina ? (
           <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF na fonte</span>
         ) : (
           <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Somente registro</span>
-        )}
-        {documento.disponivelEm.length > 1 && (
-          <span className="rounded-sm bg-library-100 px-2.5 py-1 uppercase tracking-wider text-library-800">Disponível em {documento.disponivelEm.length} fontes</span>
         )}
       </div>
       <h2 className="break-words font-display text-2xl leading-snug">

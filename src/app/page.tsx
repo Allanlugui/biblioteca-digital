@@ -3,26 +3,18 @@ import { SearchBar } from "@/components/search-bar";
 
 const EXEMPLOS = ["computação quântica", "inteligência artificial", "mudanças climáticas", "educação aberta"];
 
-const FONTES = [
+const PILARES = [
   {
-    nome: "OpenAlex",
-    descricao: "Catálogo aberto com centenas de milhões de obras e links de acesso aberto.",
+    nome: "Busca universal",
+    descricao: "Um só campo varre o acervo inteiro e reúne cada obra uma única vez.",
   },
   {
-    nome: "arXiv",
-    descricao: "Repositório de preprints em física, matemática, computação e afins.",
+    nome: "Leitura integrada",
+    descricao: "Folheie no navegador, com zoom, busca no texto e retomada de onde parou.",
   },
   {
-    nome: "DOAJ",
-    descricao: "Diretório de periódicos de acesso aberto de todo o mundo.",
-  },
-  {
-    nome: "Semantic Scholar",
-    descricao: "Base com centenas de milhões de artigos, incluindo editoras fora das demais fontes.",
-  },
-  {
-    nome: "Busca na web",
-    descricao: "Varredura de PDFs em toda a web, além dos catálogos acadêmicos.",
+    nome: "Sua estante",
+    descricao: "Salve, organize em coleções e baixe PDFs para ler quando quiser.",
   },
 ];
 
@@ -30,17 +22,17 @@ const PASSOS = [
   {
     numero: "I",
     titulo: "Consulte",
-    descricao: "Uma busca varre as cinco fontes em paralelo e reúne os resultados.",
+    descricao: "Uma busca varre o acervo inteiro em paralelo e reúne os resultados.",
   },
   {
     numero: "II",
     titulo: "Examine",
-    descricao: "Abra a ficha de cada obra: autores, data, fonte e página original.",
+    descricao: "Abra a ficha de cada obra: autores, data e resumo.",
   },
   {
     numero: "III",
     titulo: "Leia",
-    descricao: "Baixe o PDF ou leia no navegador quando a fonte disponibilizar o arquivo.",
+    descricao: "Baixe o PDF ou leia no navegador, tudo sem sair daqui.",
   },
 ];
 
@@ -69,8 +61,7 @@ export default function Home() {
             Todo o conhecimento aberto, a uma busca de distância.
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-parchment/80">
-            Milhões de publicações do OpenAlex, arXiv, DOAJ e Semantic Scholar reunidas num só
-            catálogo — mais os PDFs de toda a web, com download direto e leitura no navegador.
+            Milhões de publicações reunidas num só catálogo — mais os PDFs de toda a web, com download direto e leitura no navegador.
           </p>
           <div className="mt-10 max-w-3xl rounded-lg bg-vellum p-5 text-ink shadow-[0_18px_50px_rgba(0,0,0,0.35)] sm:p-6">
             <SearchBar grande />
@@ -94,15 +85,15 @@ export default function Home() {
       {/* O acervo */}
       <section aria-label="O acervo" className="mx-auto w-full max-w-6xl px-6 py-14">
         <div className="flex items-baseline justify-between gap-6">
-          <h2 className="font-display text-3xl tracking-tight">Cinco fontes, um só catálogo</h2>
+          <h2 className="font-display text-3xl tracking-tight">Um só catálogo</h2>
           <span aria-hidden="true" className="hidden font-display text-3xl text-gilt-600 sm:block">❦</span>
         </div>
         <div className="rule-double mt-4" aria-hidden="true" />
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {FONTES.map((fonte) => (
-            <article key={fonte.nome} className="rounded-md border border-rule bg-vellum p-6 shadow-[0_1px_0_rgba(34,26,16,0.06),0_10px_24px_rgba(34,26,16,0.06)]">
-              <h3 className="font-display text-xl">{fonte.nome}</h3>
-              <p className="mt-2 text-sm leading-6 text-ink-soft">{fonte.descricao}</p>
+          {PILARES.map((pilar) => (
+            <article key={pilar.nome} className="rounded-md border border-rule bg-vellum p-6 shadow-[0_1px_0_rgba(34,26,16,0.06),0_10px_24px_rgba(34,26,16,0.06)]">
+              <h3 className="font-display text-xl">{pilar.nome}</h3>
+              <p className="mt-2 text-sm leading-6 text-ink-soft">{pilar.descricao}</p>
             </article>
           ))}
         </div>

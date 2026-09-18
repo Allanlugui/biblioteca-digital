@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { BotaoRetirar } from "@/components/botao-retirar";
-import { formatarData, nomesFontes } from "@/lib/apresentacao";
+import { formatarData } from "@/lib/apresentacao";
 import { criarClienteServidor, supabaseLeituraConfigurado } from "@/lib/supabase/servidor";
 import type { Fonte } from "@/types";
 
@@ -59,8 +59,7 @@ export default async function ColecaoPage({ params }: PageProps<"/estante/coleca
         <ul className="mt-6 grid gap-4 md:grid-cols-2">
           {docs.map((doc) => (
             <li key={doc.id} className="flex flex-col rounded-md border border-rule bg-vellum p-5">
-              <span className="w-fit rounded-sm bg-library-900 px-2.5 py-1 text-xs font-semibold uppercase tracking-wider text-parchment">{nomesFontes[doc.fonte] ?? doc.fonte}</span>
-              <Link prefetch={false} href={`/documento/${encodeURIComponent(doc.id)}`} className="mt-3 font-display text-xl leading-snug hover:text-library-700 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
+              <Link prefetch={false} href={`/documento/${encodeURIComponent(doc.id)}`} className="font-display text-xl leading-snug hover:text-library-700 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
                 {doc.titulo}
               </Link>
               <p className="mt-2 text-sm italic text-ink-soft">{(doc.autores ?? []).join(", ") || "Autoria não informada"} · {formatarData(doc.data_publicacao)}</p>

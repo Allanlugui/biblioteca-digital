@@ -1,10 +1,4 @@
-const FONTES = [
-  { nome: "OpenAlex", url: "https://openalex.org" },
-  { nome: "arXiv", url: "https://arxiv.org" },
-  { nome: "DOAJ", url: "https://doaj.org" },
-  { nome: "Semantic Scholar", url: "https://www.semanticscholar.org" },
-  { nome: "Web", url: "https://programmablesearchengine.google.com/about/" },
-];
+import Link from "next/link";
 
 export function SiteFooter() {
   return (
@@ -17,16 +11,24 @@ export function SiteFooter() {
             leitor integrado, sem sair daqui.
           </p>
         </div>
-        <nav aria-label="Fontes do acervo">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gilt-400">Fontes do acervo</p>
+        <nav aria-label="Navegação do acervo">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-gilt-400">Navegação</p>
           <ul className="mt-4 space-y-2 text-sm font-medium">
-            {FONTES.map((fonte) => (
-              <li key={fonte.nome}>
-                <a href={fonte.url} target="_blank" rel="noopener noreferrer" className="rounded hover:text-parchment hover:underline focus-visible:outline-2 focus-visible:outline-gilt-400">
-                  {fonte.nome}<span className="sr-only"> (abre em nova aba)</span>
-                </a>
-              </li>
-            ))}
+            <li>
+              <Link href="/" className="rounded hover:text-parchment hover:underline focus-visible:outline-2 focus-visible:outline-gilt-400">
+                Início
+              </Link>
+            </li>
+            <li>
+              <Link href="/busca" className="rounded hover:text-parchment hover:underline focus-visible:outline-2 focus-visible:outline-gilt-400">
+                Buscar no acervo
+              </Link>
+            </li>
+            <li>
+              <Link href="/estante" className="rounded hover:text-parchment hover:underline focus-visible:outline-2 focus-visible:outline-gilt-400">
+                Minha estante
+              </Link>
+            </li>
           </ul>
         </nav>
         <div>

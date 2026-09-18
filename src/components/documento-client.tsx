@@ -5,7 +5,7 @@ import { useCallback, useState } from "react";
 import { documentoRespostaSchema } from "@/schemas/respostas";
 import { ErrorState, LoadingState } from "./query-states";
 import { useApi } from "./use-api";
-import { formatarData, linkExternoSeguro, nomesFontes } from "@/lib/apresentacao";
+import { formatarData, linkExternoSeguro } from "@/lib/apresentacao";
 import { DownloadButton } from "./download-button";
 import { CitacaoBox } from "./citacao-box";
 import { GuardarEmColecao } from "./guardar-em-colecao";
@@ -102,7 +102,6 @@ export function DocumentoClient({ id }: { id: string }) {
   const promoverHttps = (url: string) => (url.startsWith("http://") ? `https://${url.slice("http://".length)}` : url);
   const fonteLeitura = urlPdfExterno ?? urlPagina;
   const proxyDireto = fonteLeitura ? `/api/proxy?url=${encodeURIComponent(promoverHttps(fonteLeitura))}` : null;
-  const doiUrl = documento.doi ? `https://doi.org/${documento.doi}` : null;
 
   return (
     <article className="mt-8 overflow-hidden rounded-md border border-rule bg-vellum shadow-[0_16px_40px_rgba(34,26,16,0.08)]">
@@ -110,16 +109,12 @@ export function DocumentoClient({ id }: { id: string }) {
       <div className="p-8 sm:p-10">
         <section aria-label="Informações do documento">
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
-            <span className="rounded-sm bg-library-900 px-2.5 py-1 uppercase tracking-wider text-parchment">{nomesFontes[documento.fonte]}</span>
             {documento.urlPdf ? (
               <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF direto</span>
             ) : documento.urlPagina ? (
               <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF na fonte</span>
             ) : (
               <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Somente registro</span>
-            )}
-            {documento.disponivelEm.length > 1 && (
-              <span className="rounded-sm bg-library-100 px-2.5 py-1 uppercase tracking-wider text-library-800">Disponível em {documento.disponivelEm.length} fontes</span>
             )}
           </div>
           <h1 className="mt-5 break-words font-display text-4xl leading-tight">{documento.titulo}</h1>
@@ -135,11 +130,7 @@ export function DocumentoClient({ id }: { id: string }) {
             {documento.doi && (
               <div>
                 <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-ink-soft">DOI</dt>
-                <dd className="mt-1">
-                  <a href={doiUrl as string} target="_blank" rel="noopener noreferrer" className="break-all font-mono text-sm text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
-                    {documento.doi}<span className="sr-only"> (abre em nova aba)</span>
-                  </a>
-                </dd>
+                <dd className="mt-1 break-all font-mono text-sm">{documento.doi}</dd>
               </div>
             )}
             {typeof documento.citacoes === "number" && (
@@ -206,11 +197,8 @@ export function DocumentoClient({ id }: { id: string }) {
         <section aria-label="Origem" className="mt-8 border-t border-rule pt-6">
           <h2 className="font-display text-2xl">Origem</h2>
           <p className="mt-3 text-sm leading-6 text-ink-soft">
-            Registro fornecido por <strong>{nomesFontes[documento.fonte]}</strong>. Metadados e arquivos pertencem à fonte original.
+            Metadados e arquivos pertencem às suas publicações de origem e são exibidos aqui para leitura e estudo.
           </p>
-          <div className="mt-3 flex flex-wrap gap-4">
-            {urlPagina && <a href={urlPagina} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">Ver registro original<span className="sr-only"> (abre em nova aba)</span></a>}
-          </div>
         </section>
         {temArquivo && !leitorAberto && (
           <button onClick={abrirLeitor} className="mt-8 w-full rounded-md border-2 border-library-800 px-6 py-3 font-semibold text-library-800 hover:bg-library-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-library-700 sm:w-auto">

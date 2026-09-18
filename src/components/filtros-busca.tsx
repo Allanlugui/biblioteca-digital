@@ -1,16 +1,13 @@
 import Link from "next/link";
-import { nomesFontes } from "@/lib/apresentacao";
 import type { BuscaQuery } from "@/schemas/busca";
-import { fontesBusca } from "@/schemas/busca";
 
 export function FiltrosBusca({ valores }: { valores: BuscaQuery }) {
-  const fontes = valores.fonte ?? [...fontesBusca];
   return (
     <form action="/busca" method="get" className="rounded-md border border-rule bg-vellum p-5">
       <input type="hidden" name="q" value={valores.q} />
       <fieldset>
         <legend className="font-display text-lg">Filtrar resultados</legend>
-        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-4 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <span id="rotulo-periodo" className="block text-sm font-semibold">Período</span>
             <div className="mt-2 flex items-center gap-2" role="group" aria-labelledby="rotulo-periodo">
@@ -35,23 +32,6 @@ export function FiltrosBusca({ valores }: { valores: BuscaQuery }) {
                 aria-label="Ano final"
                 className="w-full min-w-0 rounded-md border border-rule bg-parchment px-3 py-2 outline-none focus-visible:border-library-700 focus-visible:ring-2 focus-visible:ring-library-700/40"
               />
-            </div>
-          </div>
-          <div>
-            <span id="rotulo-fontes" className="block text-sm font-semibold">Fontes</span>
-            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2" role="group" aria-labelledby="rotulo-fontes">
-              {fontesBusca.map((fonte) => (
-                <label key={fonte} className="inline-flex cursor-pointer items-center gap-1.5 text-sm">
-                  <input
-                    type="checkbox"
-                    name="fonte"
-                    value={fonte}
-                    defaultChecked={fontes.includes(fonte)}
-                    className="h-4 w-4 accent-[#184636]"
-                  />
-                  {nomesFontes[fonte]}
-                </label>
-              ))}
             </div>
           </div>
           <div>

@@ -388,6 +388,13 @@
 - **Decisão:** download, arquivo e leitor aceitam `urlPagina` como ponto de partida (descoberta + https); selos "PDF direto"/"PDF na fonte"/"Somente registro"; removidos "Abrir PDF na origem" e "Página da publicação" como ação; mantidos "Ver registro original" discreto + DOI (transparência legal).
 - **Impacto:** E2E real em DOAJ sem PDF (selo, botões, zero saídas, canvas renderizado); 83 testes; build OK.
 
+## 18/09/2026 — Fontes ocultas da interface
+
+### D73. Nomes de fontes fora da UI; motor inalterado
+- **Decisão:** removidos selos, filtro por fonte, lista do rodapé (vira Navegação), seção de fontes da home (vira pilares) e links de origem; DOI vira texto; backend (providers, dedup, API) intacto.
+- **Ressalva:** crédito agregado permanece no rodapé ("publicadores de origem"); atribuição formal por fonte foi retirada a pedido do usuário.
+- **Impacto:** E2E confirma zero nomes expostos nas 3 telas; 83 testes; build OK.
+
 ## 18/09/2026 — Auth e-mail + senha (pós-diagnóstico)
 
 ### D70. Login principal com senha; magic link secundário

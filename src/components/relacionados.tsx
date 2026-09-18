@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { z } from "zod";
 import { documentoRespostaSchema } from "@/schemas/respostas";
-import { formatarData, nomesFontes } from "@/lib/apresentacao";
+import { formatarData } from "@/lib/apresentacao";
 import { useApi } from "./use-api";
 
 const listaSchema = z.array(documentoRespostaSchema);
@@ -30,8 +30,7 @@ export function Relacionados({ id }: { id: string }) {
       <ul className="mt-4 grid gap-4 md:grid-cols-2">
         {estado.data.map((doc) => (
           <li key={doc.id} className="rounded-md border border-rule bg-parchment p-4">
-            <span className="rounded-sm bg-library-900 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-parchment">{nomesFontes[doc.fonte]}</span>
-            <Link prefetch={false} href={`/documento/${encodeURIComponent(doc.id)}`} className="mt-2 block font-display text-lg leading-snug hover:text-library-700 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
+            <Link prefetch={false} href={`/documento/${encodeURIComponent(doc.id)}`} className="font-display text-lg leading-snug hover:text-library-700 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
               {doc.titulo}
             </Link>
             <p className="mt-1 text-xs text-ink-soft">

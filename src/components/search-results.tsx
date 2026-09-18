@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import { buscaRespostaSchema } from "@/schemas/respostas";
-import { nomesFontes } from "@/lib/apresentacao";
-import type { SearchProviderId } from "@/services/search/types";
 import { EmptyState, ErrorState, LoadingState } from "./query-states";
 import { ResultCard } from "./result-card";
 import { useApi } from "./use-api";
@@ -67,10 +65,9 @@ export function SearchResults({ query }: { query: string }) {
 
 function AvisoFontes({ indisponiveis }: { indisponiveis: string[] }) {
   if (indisponiveis.length === 0) return null;
-  const nomes = indisponiveis.map((f) => nomesFontes[f as SearchProviderId] ?? f).join(", ");
   return (
     <p role="status" className="mb-6 rounded-md border border-gilt-600/50 bg-gilt-100 px-4 py-3 text-sm text-gilt-700">
-      {indisponiveis.length === 1 ? "Fonte indisponível no momento" : "Fontes indisponíveis no momento"}: {nomes}. Mostrando as demais.
+      Parte do acervo está indisponível no momento. Mostrando o restante.
     </p>
   );
 }
