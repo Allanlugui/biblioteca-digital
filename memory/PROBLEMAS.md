@@ -180,3 +180,5 @@
 - **Edge responde bem:** signup inválido devolve 400 correto — camada edge íntegra.
 - **Restam:** signup desabilitado, captcha/hooks, ou SMTP com rollback (H1/H5). Sem acesso aos Auth Logs internos.
 - **Nada residual:** teste apagado, tabelas intactas.
+- **CAUSA RAIZ CONFIRMADA (H1):** Auth Log do usuário mostra `535 5.7.8 Username and Password not accepted` (Gmail SMTP) — credenciais SMTP customizadas erradas. Gmail exige senha de app (com 2FA), não a senha normal.
+- **Correção (painel, pelo usuário):** Auth → Email → SMTP: corrigir usuário/senha-de-app ou desativar o SMTP customizado para voltar ao remetente padrão. Código e banco intactos.
