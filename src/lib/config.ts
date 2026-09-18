@@ -13,6 +13,9 @@ export type ServerConfig = {
   storageDriver: "drive" | "supabase";
   googleServiceAccountJson: string;
   googleDriveFolderId: string;
+  googleOAuthClientId: string;
+  googleOAuthClientSecret: string;
+  googleOAuthRefreshToken: string;
 };
 
 function readPositiveInt(name: string, fallback: number): number {
@@ -46,4 +49,7 @@ export const config: ServerConfig = {
   storageDriver: process.env.STORAGE_DRIVER?.trim().toLowerCase() === "drive" ? "drive" : "supabase",
   googleServiceAccountJson: process.env.GOOGLE_SERVICE_ACCOUNT_JSON?.trim() ?? "",
   googleDriveFolderId: process.env.GOOGLE_DRIVE_FOLDER_ID?.trim() ?? "",
+  googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() ?? "",
+  googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() ?? "",
+  googleOAuthRefreshToken: process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim() ?? "",
 };

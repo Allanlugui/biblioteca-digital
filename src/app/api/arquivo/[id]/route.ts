@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import type { NextRequest } from "next/server";
 import { API_ERROR_CODES, fail, ok, formatZodErrors } from "@/lib/api";
 import { selecionarBackend } from "@/lib/armazenamento/indice";
+import { backendSupabase } from "@/lib/armazenamento/supabase";
 import { ehDrivePath, nomeParaHash } from "@/lib/armazenamento/tipos";
 import { fetchPdfResiliente, PdfError } from "@/lib/pdf";
 import { checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/rate-limit";
@@ -68,24 +69,35 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
   const backend = selecionarBackend();
 
   // Já arquivado? Serve direto, sem depender da fonte externa.
+  // Caminhos legados do Supabase servem pela URL pública em qualquer modo.
   if (arquivado?.storage_path) {
     const ref = arquivado.storage_path as string;
-    if (ehDrivePath(ref)) {
-      const okExiste = await comTimeout(backend.existe(ref), 10_000);
-      if (!okExiste) {
-        return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
-      }
+    if (!ehDrivePath(ref)) {
+      await comTimeout(
+        Promise.resolve(
+          admin
+            .from("documentos")
+            .update({ acessos: (arquivado.acessos ?? 0) + 1, ultimo_acesso: new Date().toISOString() })
+            .eq("id", parsed.data),
+        ),
+        10_000,
+      );
+      const publica = backendSupabase().urlPublica?.(ref);
+      return ok({ url: publica ?? `/api/arquivo/${encodeURIComponent(parsed.data)}/bytes` }, headers);
     }
-    await comTimeout(
-      Promise.resolve(
-        admin
-          .from("documentos")
-          .update({ acessos: (arquivado.acessos ?? 0) + 1, ultimo_acesso: new Date().toISOString() })
-          .eq("id", parsed.data),
-      ),
-      10_000,
-    );
-    return ok({ url: urlLeitura(backend, parsed.data, ref) }, headers);
+    const okExiste = await comTimeout(backend.existe(ref), 10_000);
+    if (okExiste) {
+      await comTimeout(
+        Promise.resolve(
+          admin
+            .from("documentos")
+            .update({ acessos: (arquivado.acessos ?? 0) + 1, ultimo_acesso: new Date().toISOString() })
+            .eq("id", parsed.data),
+        ),
+        10_000,
+      );
+      return ok({ url: urlLeitura(backend, parsed.data, ref) }, headers);
+    }
   }
 
   // Origem do arquivo: PDF direto ou, sem ele, a página da publicação
@@ -171,11 +183,16 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
   const nome = nomeParaHash(sha256);
 
   // Dedup entre fontes: mesmo arquivo já arquivado sob outro id.
+  // Só reutiliza quando o caminho é do backend ativo (migração de backend re-arquiva).
   const mesmoArquivo = await comTimeout(
     admin.from("documentos").select("storage_path").eq("sha256", sha256).maybeSingle(),
     10_000,
   );
-  let storagePath: string | null = mesmoArquivo && !mesmoArquivo.error ? (mesmoArquivo.data?.storage_path ?? null) : null;
+  const achado: string | null = mesmoArquivo && !mesmoArquivo.error ? (mesmoArquivo.data?.storage_path ?? null) : null;
+  const compativel =
+    achado !== null &&
+    (backend.nome === "drive" ? ehDrivePath(achado) : !ehDrivePath(achado));
+  let storagePath: string | null = compativel ? achado : null;
   if (mesmoArquivo === null) {
     return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
   }

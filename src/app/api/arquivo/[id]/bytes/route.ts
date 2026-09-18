@@ -1,6 +1,8 @@
 import type { NextRequest } from "next/server";
 import { API_ERROR_CODES, fail, formatZodErrors } from "@/lib/api";
 import { selecionarBackend } from "@/lib/armazenamento/indice";
+import { backendSupabase } from "@/lib/armazenamento/supabase";
+import { ehDrivePath } from "@/lib/armazenamento/tipos";
 import { checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/rate-limit";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { documentoIdSchema } from "@/schemas";
@@ -33,7 +35,7 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
     return fail(API_ERROR_CODES.NOT_FOUND, "Arquivo ainda não arquivado.", 404, undefined, headers);
   }
 
-  const arquivo = await selecionarBackend().baixar(path).catch(() => null);
+  const arquivo = await (ehDrivePath(path) ? selecionarBackend() : backendSupabase()).baixar(path).catch(() => null);
   if (!arquivo) {
     return fail(API_ERROR_CODES.ACERVO_INDISPONIVEL, "Acervo indisponível no momento.", 503, undefined, headers);
   }
