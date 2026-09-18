@@ -2,6 +2,7 @@ const FONTES = [
   { nome: "OpenAlex", url: "https://openalex.org" },
   { nome: "arXiv", url: "https://arxiv.org" },
   { nome: "DOAJ", url: "https://doaj.org" },
+  { nome: "Semantic Scholar", url: "https://www.semanticscholar.org" },
 ];
 
 export function SiteFooter() {
