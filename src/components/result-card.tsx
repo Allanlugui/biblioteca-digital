@@ -4,21 +4,25 @@ import type { Documento } from "@/types";
 
 export function ResultCard({ documento }: { documento: Documento }) {
   return (
-    <article className="flex h-full flex-col rounded-2xl border border-zinc-200 p-6 dark:border-zinc-800">
-      <div className="mb-4 flex flex-wrap items-center gap-3 text-xs font-semibold">
-        <span className="rounded-full bg-zinc-100 px-3 py-1 dark:bg-zinc-800">{nomesFontes[documento.fonte]}</span>
-        <span className="text-teal-700 dark:text-teal-400">{documento.urlPdf ? "PDF disponível na fonte" : "Sem PDF direto"}</span>
+    <article className="flex h-full flex-col rounded-md border border-rule bg-vellum p-6 shadow-[0_1px_0_rgba(34,26,16,0.06),0_10px_24px_rgba(34,26,16,0.05)] transition-shadow hover:shadow-[0_1px_0_rgba(34,26,16,0.06),0_16px_32px_rgba(34,26,16,0.10)]">
+      <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
+        <span className="rounded-sm bg-library-900 px-2.5 py-1 uppercase tracking-wider text-parchment">{nomesFontes[documento.fonte]}</span>
+        {documento.urlPdf ? (
+          <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF disponível</span>
+        ) : (
+          <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Sem PDF direto</span>
+        )}
       </div>
-      <h2 className="break-words text-xl font-semibold leading-7">
-        <Link prefetch={false} href={`/documento/${encodeURIComponent(documento.id)}`} className="rounded hover:text-teal-700 focus-visible:outline-2 focus-visible:outline-teal-600 dark:hover:text-teal-400">
+      <h2 className="break-words font-display text-2xl leading-snug">
+        <Link prefetch={false} href={`/documento/${encodeURIComponent(documento.id)}`} className="rounded hover:text-library-700 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
           {documento.titulo}
         </Link>
       </h2>
-      <p className="mt-3 line-clamp-2 text-sm text-zinc-600 dark:text-zinc-400">{documento.autores.length ? documento.autores.join(", ") : "Autoria não informada"}</p>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{formatarData(documento.dataPublicacao)}</p>
-      {documento.descricao && <p className="mt-4 line-clamp-3 text-sm leading-6 text-zinc-600 dark:text-zinc-400">{documento.descricao}</p>}
-      <Link prefetch={false} href={`/documento/${encodeURIComponent(documento.id)}`} className="mt-auto pt-6 text-sm font-semibold text-teal-700 underline-offset-4 hover:underline dark:text-teal-400">
-        Ver detalhes<span className="sr-only"> de {documento.titulo}</span>
+      <p className="mt-3 line-clamp-2 text-sm italic leading-6 text-ink-soft">{documento.autores.length ? documento.autores.join(", ") : "Autoria não informada"}</p>
+      <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-soft">{formatarData(documento.dataPublicacao)}</p>
+      {documento.descricao && <p className="mt-4 line-clamp-3 text-sm leading-6 text-ink-soft">{documento.descricao}</p>}
+      <Link prefetch={false} href={`/documento/${encodeURIComponent(documento.id)}`} className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">
+        Consultar a ficha<span className="sr-only"> de {documento.titulo}</span><span aria-hidden="true">→</span>
       </Link>
     </article>
   );

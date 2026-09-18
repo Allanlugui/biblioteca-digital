@@ -235,3 +235,10 @@
 - **Contexto:** P22 — fontes informam PDF em `http`, mas proxy/download exigem https.
 - **Motivo:** corrigir na origem (um ponto por provider) em vez de relaxar o guard; upgrade para https é seguro e o `fetchPdf` continua validando MIME + magic bytes.
 - **Impacto:** leitor e download passam a funcionar para PDFs http quando o host serve https.
+
+## 18/09/2026 — Fase 6 (Redesign UI)
+
+### D43. Identidade visual "sala de leitura": Fraunces + papel + verde-biblioteca
+- **Decisão:** paleta única clara e quente (pergaminho `#f5f0e3`, velino, tinta marrom, verde `#123528`, dourado), serifada Fraunces para títulos + Inter para texto, header/footer verde-escuro com filete dourado; **sem** modo escuro automático (era a origem do visual "preto" reclamado).
+- **Motivo:** aspecto de biblioteca clássica que transmite autoridade; um tema único evita inconsistências de contraste.
+- **Impacto:** só apresentação — 12 arquivos em `app/` + `components/`; API, serviços e contratos intactos; validado com screenshots reais (home + busca com 20 docs, zero erros de página).

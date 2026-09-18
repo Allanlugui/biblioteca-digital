@@ -59,7 +59,7 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
 
   if (estado === "error") {
     return (
-      <p role="alert" className="mt-4 rounded-xl border border-red-300 p-4 text-sm text-red-700 dark:border-red-900 dark:text-red-400">
+      <p role="alert" className="mt-4 rounded-md border border-red-300 bg-[#fdf3ef] p-4 text-sm font-medium text-red-800">
         Não foi possível exibir o leitor: {mensagem}
       </p>
     );
@@ -67,11 +67,11 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
 
   return (
     <section aria-label="Leitor de PDF" className="mt-6">
-      <p className="mb-3 text-sm text-zinc-600 dark:text-zinc-400">
+      <p className="mb-3 text-sm italic text-ink-soft">
         Pré-visualização das primeiras páginas (máximo 20).{" "}
         {estado === "loading" && <span aria-live="polite">Carregando…</span>}
       </p>
-      <div ref={containerRef} className="space-y-4" />
+      <div ref={containerRef} className="space-y-4 rounded-md border border-rule bg-parchment p-4 sm:p-6" />
     </section>
   );
 }

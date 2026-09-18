@@ -29,5 +29,5 @@ export function DownloadButton({ id }: { id: string }) {
     }
   }
 
-  return <div><button onClick={baixar} disabled={baixando} aria-busy={baixando} className="rounded-xl bg-teal-700 px-6 py-3 font-semibold text-white hover:bg-teal-800 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-teal-600 disabled:cursor-wait disabled:opacity-60">{baixando ? "Preparando download…" : "Baixar PDF"}</button>{erro && <p role="alert" className="mt-3 max-w-lg text-sm text-red-700 dark:text-red-400">{erro}</p>}</div>;
+  return <div><button onClick={baixar} disabled={baixando} aria-busy={baixando} className="rounded-md bg-library-800 px-6 py-3 font-semibold text-parchment shadow-[0_2px_0_rgba(11,36,28,0.9)] hover:bg-library-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-library-700 active:translate-y-px active:shadow-none disabled:cursor-wait disabled:opacity-60">{baixando ? "Preparando download…" : "Baixar PDF"}</button>{erro && <p role="alert" className="mt-3 max-w-lg text-sm font-medium text-red-800">{erro}</p>}</div>;
 }

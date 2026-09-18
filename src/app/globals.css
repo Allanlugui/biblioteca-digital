@@ -1,26 +1,51 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-fraunces), Georgia, "Times New Roman", serif;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --color-parchment: #f5f0e3;
+  --color-vellum: #fffdf6;
+  --color-ink: #221a10;
+  --color-ink-soft: #6b6152;
+  --color-rule: #e2d7bd;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-library-50: #eef4ef;
+  --color-library-100: #d9e7dc;
+  --color-library-700: #205c46;
+  --color-library-800: #184636;
+  --color-library-900: #123528;
+  --color-library-950: #0b241c;
+
+  --color-gilt-100: #f7ecc9;
+  --color-gilt-400: #d4a72c;
+  --color-gilt-600: #9a7414;
+  --color-gilt-700: #7a5c0e;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-parchment);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+/* Ornamento de regra dupla usado em cabeçalhos de seção. */
+.rule-double {
+  border-top: 1px solid var(--color-rule);
+  position: relative;
+}
+
+.rule-double::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* Textura sutil de papel no hero (gradiente + pontos, sem imagens externas). */
+.paper-texture {
+  background-image: radial-gradient(rgba(34, 26, 16, 0.055) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
