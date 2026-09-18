@@ -215,3 +215,11 @@
 - **Decisão:** README do template substituído por documentação real (scripts, envs, API, deploy, limitações); header `X-Powered-By` removido.
 - **Motivo:** artefatos mínimos de prontidão para produção; deploy Vercel segue zero-config.
 - **Impacto:** nenhum em runtime além do header removido.
+
+## 18/09/2026 — Commit inicial
+
+### D40. `git init` + primeiro commit com `memory/` versionada
+- **Decisão:** inicializar o repo local (branch `master`, commit `8287057`, 69 arquivos) incluindo `memory/` (STATUS/TODO/DECISOES/PROBLEMAS, sem segredos — verificado por busca); `.obsidian/` excluído via `.gitignore`.
+- **Contexto:** D6 adiava o `git init`; `.env*` no `.gitignore` excluía `.env.example` (corrigido com `!.env.example`); 4 `.gitkeep` obsoletos removidos (pastas já têm conteúdo).
+- **Motivo:** pronto-para-commit exigia working tree válido para GitHub/Vercel; `memory/` é doc operacional referenciada pelo README.
+- **Impacto:** push pendente de `git remote add origin <url>`; deploy Vercel via import do painel (zero-config).

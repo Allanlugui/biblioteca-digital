@@ -1,8 +1,8 @@
 # Status do Projeto: biblioteca-digital 
 - **Data de Criação:** 16/09/2026 17:06:37,33 
-- **Data de Atualização:** 16/09/2026 
-- **Estado Atual:** PROJETO CONCLUÍDO — Fases 0–5 validadas (lint, typecheck, build, 31 testes unitários, E2E 15/15). Pronto para deploy na Vercel. 
-- **Ultimo Progresso:** Fase 5 finalizada: testes permanentes com Vitest, hardening P7 (store de rate limit plugável) e P8 (fetch com IP fixado anti-DNS-rebinding), validação de magic bytes `%PDF-` no stream (P14), README de deploy, `poweredByHeader: false`, e E2E completo 15/15 com screenshot do leitor renderizando página real. 
+- **Data de Atualização:** 18/09/2026
+- **Estado Atual:** COMMIT INICIAL CRIADO — repo git local com 69 arquivos, working tree limpo. Falta: conectar remoto GitHub e importar na Vercel.
+- **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 
 ---
 
@@ -300,3 +300,12 @@ Detalhamento das tarefas em `memory/TODO.md`.
 * `npm run typecheck` ✅ | `npm run lint` ✅ | `npm run build` ✅ | `npm test` 31/31 ✅.
 * **Funcional (proxy no novo stack):** PDF arXiv → 200 + magic; HTML → 502; `127.0.0.1`/`10.0.0.1` → 403; busca/documento/download OK.
 * **E2E completo (Chromium): 15/15 OK** — home, busca (20 cards), empty state, documento, download `%PDF-`, leitor (canvas 918x1188), leitor oculto sem PDF, 404, zero erros de página + screenshot do leitor com página real.
+
+---
+
+## 11. Commit inicial (18/09/2026)
+
+* Repo git inicializado (`master`, commit `8287057`), 69 arquivos, working tree limpo.
+* Revalidado antes do commit: `typecheck` ✅ | `lint` ✅ | `test` 31/31 ✅ | `build` ✅ (tabela de rotas idêntica à documentada).
+* Correções aplicadas: `.gitignore` com `!.env.example` (o pattern `.env*` o excluía) e `.obsidian/` ignorado; 4 `.gitkeep` obsoletos removidos.
+* Pendente: `git remote add origin <url>` + `git push -u origin master`, depois importar na Vercel pelo painel.
