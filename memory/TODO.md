@@ -89,6 +89,9 @@
 - [ ] Rodar `supabase/migrations/0002_documento_enriquecido.sql` e `0003_colecoes.sql` (usuário)
 - [ ] Testar fluxo logado das coleções em produção
 
+## Bloco G — Citações (CONCLUÍDO e validado)
+- [x] ABNT, APA, MLA, Chicago, BibTeX, RIS + copiar/baixar
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

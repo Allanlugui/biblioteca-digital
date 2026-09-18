@@ -7,6 +7,7 @@ import { ErrorState, LoadingState } from "./query-states";
 import { useApi } from "./use-api";
 import { formatarData, linkExternoSeguro, nomesFontes } from "@/lib/apresentacao";
 import { DownloadButton } from "./download-button";
+import { CitacaoBox } from "./citacao-box";
 import { GuardarEmColecao } from "./guardar-em-colecao";
 import { SaveButton } from "./save-button";
 
@@ -171,6 +172,10 @@ export function DocumentoClient({ id }: { id: string }) {
             <p className="mt-3 leading-7 text-ink-soft">{documento.descricao}</p>
           </section>
         )}
+        <section aria-label="Citar" className="mt-8 border-t border-rule pt-6">
+          <h2 className="font-display text-2xl">Citar</h2>
+          <CitacaoBox documento={documento} />
+        </section>
         <section aria-label="Arquivos" className="mt-8 border-t border-rule pt-6">
           <h2 className="font-display text-2xl">Arquivos</h2>
           {!documento.urlPdf ? (
