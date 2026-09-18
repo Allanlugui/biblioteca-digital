@@ -182,3 +182,7 @@
 - **Nada residual:** teste apagado, tabelas intactas.
 - **CAUSA RAIZ CONFIRMADA (H1):** Auth Log do usuário mostra `535 5.7.8 Username and Password not accepted` (Gmail SMTP) — credenciais SMTP customizadas erradas. Gmail exige senha de app (com 2FA), não a senha normal.
 - **Correção (painel, pelo usuário):** Auth → Email → SMTP: corrigir usuário/senha-de-app ou desativar o SMTP customizado para voltar ao remetente padrão. Código e banco intactos.
+
+### P31. Remetente padrão limitado a ~2 e-mails/hora — usar SMTP próprio
+- **Contexto:** resolvido o 500, o gargalo passou a ser a cota do mailer embutido.
+- **Solução:** configurar SMTP próprio em Auth → Email → SMTP. Recomendado Resend (grátis generoso, feito para transacional); alternativa Gmail com senha de app (limite ~500/dia).
