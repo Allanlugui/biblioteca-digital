@@ -1,5 +1,6 @@
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import type { Documento, Fonte } from "@/types";
+import { normalizarTitulo } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const FONTES_VALIDAS = new Set<string>(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar", "web", "gutenberg"]);
@@ -61,18 +62,20 @@ const COLUNAS = "id, fonte, titulo, autores, descricao, data_publicacao, url_pag
 export const acervoProvider: SearchProvider = {
   fonte: "gutenberg",
 
-  async buscar(termo: string, limite: number): Promise<Documento[]> {
+  async buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: { inicio?: number }): Promise<Documento[]> {
     try {
       const admin = criarClienteAdmin();
       if (!admin) return [];
-      const limpo = termo.trim().slice(0, 120).replace(/[%_]/g, "");
+      const limpo = normalizarTitulo(termo).slice(0, 120).replace(/[%_]/g, "");
       if (limpo.length < 2) return [];
+      const porPagina = Math.min(Math.max(limite, 1), 50);
+      const inicio = Math.max(opcoes?.inicio ?? 0, 0);
       const { data, error } = await admin
         .from("documentos")
         .select(COLUNAS)
         .not("storage_path", "is", null)
-        .or(`titulo.ilike.%${limpo}%,descricao.ilike.%${limpo}%`)
-        .limit(Math.min(Math.max(limite, 1), 50));
+        .ilike("busca_texto", `%${limpo}%`)
+        .range(inicio, inicio + porPagina - 1);
       if (error || !data) return [];
       return data.map((l) => linhaParaDocumento(l)).filter((d): d is Documento => d !== null);
     } catch {

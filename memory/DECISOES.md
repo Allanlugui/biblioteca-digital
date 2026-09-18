@@ -411,6 +411,12 @@
 - **Decisão:** `scripts/ingerir/lote.mjs` (arXiv/DOAJ/Gutenberg, anti-SSRF, 20MB/arquivo, teto 350GB, checkpoint retomável, dedup SHA); ids `gutenberg_*` servidos pela linha do banco; provider `acervo` (ilike, ranqueado primeiro).
 - **Impacto:** 28 itens no primeiro ciclo (25 novos, 3 dup, 1 falha); busca e ficha validadas; 91 testes; build OK.
 
+## 18/09/2026 — Open Library + busca sem acento
+
+### D78. Livros públicos via OL/IA + coluna busca_texto
+- **Decisão:** fonte Open Library (só `public_scan_b`, PDF real via metadata do Archive); migration 0004 (unaccent + trigram + coluna gerada); provider usa termo normalizado; `normalizarTitulo` movido para `normalizar.ts` (quebra ciclo que derrubava o build).
+- **Impacto:** "bras cubas" acha "Brás Cubas"; 41 itens no 2º ciclo; build verde.
+
 ## 18/09/2026 — Só arquivos baixáveis por padrão
 
 ### D74. soPdf padrão via select explícito (sem checkbox ambíguo)

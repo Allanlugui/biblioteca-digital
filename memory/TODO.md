@@ -114,8 +114,11 @@
 - [x] Conta de serviço + pasta compartilhada + envs (usuário)
 - [x] Validar upload/leitura no Drive real (local + produção)
 
-## Acervo povoado (ciclo 1: 28 itens)
+## Acervo povoado (ciclo 2: 69 itens)
 - [x] Script `scripts/ingerir/lote.mjs` + provider acervo
+- [x] Open Library/IA + busca insensível a acentos
+- [ ] Rodar `supabase/migrations/0004_busca_acentos.sql` (usuário, OBRIGATÓRIO p/ busca local)
+- [ ] Confirmar migrations 0002 + 0003 aplicadas
 - [ ] Agendar execução contínua (GitHub Action) para milhares de itens
 
 ## Bloco M — Auditoria final (CONCLUÍDO)

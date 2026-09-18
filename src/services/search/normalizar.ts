@@ -1,6 +1,16 @@
 // Normalização única dos metadados que as fontes informam em formatos próprios.
 // Nenhuma função aqui inventa dados: entradas ausentes ou malformadas viram null/[].
 
+export function normalizarTitulo(titulo: string): string {
+  return titulo
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 const DOI_NUCLEO = /^10\.\d{4,9}\/\S+$/i;
 
 export function normalizarDoi(valor: string | null | undefined): string | null {

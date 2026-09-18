@@ -3,7 +3,7 @@ import type { Documento, FiltrosBusca, OrdemBusca, ResultadoBusca } from "@/type
 import { acervoProvider } from "./acervo";
 import { arxivProvider } from "./arxiv";
 import { doajProvider } from "./doaj";
-import { normalizarArxivId } from "./normalizar";
+import { normalizarArxivId, normalizarTitulo } from "./normalizar";
 import { openalexProvider } from "./openalex";
 import { semanticScholarProvider } from "./semanticscholar";
 import { webDisponivel, webProvider } from "./web";
@@ -32,15 +32,7 @@ type EntradaCache = {
 const cache = new Map<string, EntradaCache>();
 const MAX_ENTRADAS_CACHE = 200;
 
-export function normalizarTitulo(titulo: string): string {
-  return titulo
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9\s]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
+export { normalizarTitulo } from "./normalizar";
 
 function normalizarUrl(url: string): string {
   return url.trim().toLowerCase().replace(/\/+$/, "");

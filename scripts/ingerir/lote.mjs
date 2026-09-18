@@ -181,11 +181,45 @@ async function listarGutenberg(pagina) {
   return itens;
 }
 
+// Open Library (só escaneamento público) + PDF real via metadata do Archive.
+async function listarOpenLibrary(termo, offset) {
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(termo)}&limit=15&offset=${offset}&fields=key,title,author_name,ia,public_scan_b,first_publish_year,language`;
+  const j = await (await fetch(url, { headers: { "User-Agent": "biblioteca-digital/0.1" } })).json();
+  const itens = [];
+  for (const d of j.docs || []) {
+    if (!d.public_scan_b || !d.title) continue;
+    for (const iaId of d.ia || []) {
+      try {
+        const meta = await (await fetch(`https://archive.org/metadata/${encodeURIComponent(iaId)}`, { headers: { "User-Agent": "biblioteca-digital/0.1" } })).json();
+        const arquivos = meta.files || [];
+        const pdf = arquivos.find((f) => typeof f.name === "string" && f.name.toLowerCase().endsWith(".pdf") && !/(_text|_encrypted|_djvu)/.test(f.name.toLowerCase()));
+        if (!pdf) continue;
+        itens.push({
+          id: `gutenberg_ol_${String(iaId).replace(/[^A-Za-z0-9._-]/g, "_").slice(0, 60)}`,
+          titulo: String(d.title).replace(/\s+/g, " ").trim().slice(0, 300),
+          autores: (d.author_name || []).slice(0, 8),
+          descricao: null,
+          url: `https://archive.org/download/${encodeURIComponent(iaId)}/${encodeURIComponent(pdf.name)}`,
+          fonte: "gutenberg",
+          idioma: Array.isArray(d.language) && d.language[0] ? String(d.language[0]).slice(0, 8) : null,
+          ano: d.first_publish_year || null,
+        });
+        break;
+      } catch {
+        continue;
+      }
+      await dormir(1000);
+    }
+    await dormir(1000);
+  }
+  return itens;
+}
+
 function carregarCheckpoint() {
   try {
     return JSON.parse(fs.readFileSync(CHECKPOINT, "utf8"));
   } catch {
-    return { arxiv: {}, doaj: {}, gutenbergPage: 1, arquivos: 0, bytes: 0 };
+    return { arxiv: {}, doaj: {}, openlibrary: {}, gutenbergPage: 1, arquivos: 0, bytes: 0 };
   }
 }
 
@@ -228,6 +262,16 @@ async function main() {
   } catch (e) {
     console.log("gutenberg falhou:", String(e).slice(0, 80));
   }
+  const temasOL = ["machado de assis", "filosofia", "historia do brasil", "poesia brasileira", "direito", "sociologia"];
+  for (const tema of temasOL) {
+    const off = (cp.openlibrary && cp.openlibrary[tema]) || 0;
+    try {
+      candidatos.push(...(await listarOpenLibrary(tema, off)).map((c) => ({ ...c, cursor: { escopo: "openlibrary", chave: tema } })));
+    } catch (e) {
+      console.log("openlibrary falhou:", tema, String(e).slice(0, 80));
+    }
+    await dormir(1500);
+  }
 
   for (const item of candidatos) {
     if (resumo.novos >= MAX_FILES) break;
@@ -263,6 +307,9 @@ async function main() {
         titulo: item.titulo,
         autores: item.autores,
         descricao: item.descricao,
+        data_publicacao: item.ano ? String(item.ano) : null,
+        idioma: item.idioma || null,
+        tipo: "book",
         url_origem: segura,
         url_pagina: null,
         storage_path: ref,
@@ -283,6 +330,10 @@ async function main() {
     if (item.cursor.escopo === "arxiv") cp.arxiv[item.cursor.chave] = (cp.arxiv[item.cursor.chave] || 0) + 8;
     if (item.cursor.escopo === "doaj") cp.doaj[item.cursor.chave] = (cp.doaj[item.cursor.chave] || 1) + 1;
     if (item.cursor.escopo === "gutenberg") cp.gutenbergPage = cp.gutenbergPage + 1;
+    if (item.cursor.escopo === "openlibrary") {
+      cp.openlibrary = cp.openlibrary || {};
+      cp.openlibrary[item.cursor.chave] = (cp.openlibrary[item.cursor.chave] || 0) + 15;
+    }
     fs.writeFileSync(CHECKPOINT, JSON.stringify(cp));
     console.log(`ok ${resumo.novos}/${MAX_FILES}:`, item.id.slice(0, 50));
     await dormir(1500);
