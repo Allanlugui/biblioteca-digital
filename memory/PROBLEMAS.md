@@ -152,3 +152,8 @@
 - **Causa:** só a primeira consulta tinha timeout; `fetchPdf` baixava o arquivo e as chamadas seguintes (dedup, upload, upsert) penduravam sem prazo.
 - **Resolução:** helper `comTimeout` em todas as idas ao Acervo (10s leitura/escrita, 25s upload) + `registrarBusca` com teto de 4s; qualquer falha vira 503 e o cliente usa o proxy direto.
 - **Lição:** integração externa no caminho da leitura precisa de prazo em cada passo, não só no primeiro.
+
+### P26. `/api/arquivo` dependia da fonte mesmo com PDF arquivado — RESOLVIDO
+- **Sintoma:** com o Tierkreis já no Storage, a rota devolveu 404 porque o arXiv falhou na hora (timeout frio).
+- **Causa:** `buscarDocumentoPorId` rodava antes de checar o acervo; fonte fora = 404 mesmo com arquivo guardado.
+- **Resolução:** a rota primeiro serve do acervo; só consulta a fonte quando a linha não existe ou não tem `url_origem`. Validado: 200 em 3.8s servindo do Storage.

@@ -60,27 +60,47 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
     );
   }
 
-  const documento = await buscarDocumentoPorId(parsed.data);
-  if (!documento?.urlPdf) {
-    return fail(API_ERROR_CODES.NOT_FOUND, "Documento não encontrado.", 404, undefined, headers);
-  }
-
-  // Já arquivado? Serve direto e conta o acesso (melhor esforço).
-  const existente = await comTimeout(
-    admin.from("documentos").select("storage_path, acessos").eq("id", documento.id).maybeSingle(),
+  const linha = await comTimeout(
+    admin.from("documentos").select("*").eq("id", parsed.data).maybeSingle(),
     10_000,
   );
-  if (existente && !existente.error && existente.data?.storage_path) {
-    await admin
-      .from("documentos")
-      .update({ acessos: (existente.data.acessos ?? 0) + 1, ultimo_acesso: new Date().toISOString() })
-      .eq("id", documento.id);
-    return ok({ url: urlPublica(admin, existente.data.storage_path) }, headers);
+  const arquivado = linha && !linha.error ? linha.data : null;
+
+  // Já arquivado? Serve direto, sem depender da fonte externa.
+  if (arquivado?.storage_path) {
+    await comTimeout(
+      Promise.resolve(
+        admin
+          .from("documentos")
+          .update({ acessos: (arquivado.acessos ?? 0) + 1, ultimo_acesso: new Date().toISOString() })
+          .eq("id", parsed.data),
+      ),
+      10_000,
+    );
+    return ok({ url: urlPublica(admin, arquivado.storage_path) }, headers);
+  }
+
+  // Origem do PDF: a linha do acervo (quando existe) ou a fonte externa.
+  let urlPdf: string | null = typeof arquivado?.url_origem === "string" && arquivado.url_origem ? arquivado.url_origem : null;
+  let documento: { fonte: string; titulo: string; autores: string[]; descricao: string | null; dataPublicacao: string | null; urlPdf: string; urlPagina: string | null } | null = null;
+  if (!urlPdf) {
+    try {
+      const daFonte = await buscarDocumentoPorId(parsed.data);
+      if (daFonte?.urlPdf) {
+        documento = { fonte: daFonte.fonte, titulo: daFonte.titulo, autores: daFonte.autores, descricao: daFonte.descricao, dataPublicacao: daFonte.dataPublicacao, urlPdf: daFonte.urlPdf, urlPagina: daFonte.urlPagina };
+        urlPdf = daFonte.urlPdf;
+      }
+    } catch {
+      // Fonte indisponível: 404 honesto abaixo.
+    }
+  }
+  if (!urlPdf) {
+    return fail(API_ERROR_CODES.NOT_FOUND, "Documento não encontrado.", 404, undefined, headers);
   }
 
   let alvo: string;
   try {
-    alvo = (await assertPublicHttpsUrl(documento.urlPdf)).url.toString();
+    alvo = (await assertPublicHttpsUrl(urlPdf)).url.toString();
   } catch (error) {
     if (error instanceof UrlGuardError) {
       const statusByCode: Record<string, number> = {
@@ -134,14 +154,14 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
     Promise.resolve(
       admin.from("documentos").upsert(
         {
-          id: documento.id,
-          fonte: documento.fonte,
-          titulo: documento.titulo,
-          autores: documento.autores,
-          descricao: documento.descricao,
-          data_publicacao: documento.dataPublicacao,
-          url_origem: documento.urlPdf,
-          url_pagina: documento.urlPagina,
+          id: parsed.data,
+          fonte: documento?.fonte ?? arquivado?.fonte ?? parsed.data.split("_")[0] ?? "openalex",
+          titulo: documento?.titulo ?? arquivado?.titulo ?? parsed.data,
+          autores: documento?.autores ?? arquivado?.autores ?? [],
+          descricao: documento?.descricao ?? arquivado?.descricao ?? null,
+          data_publicacao: documento?.dataPublicacao ?? arquivado?.data_publicacao ?? null,
+          url_origem: urlPdf,
+          url_pagina: documento?.urlPagina ?? arquivado?.url_pagina ?? null,
           storage_path: storagePath ?? path,
           sha256,
           tamanho_bytes: bytes.byteLength,

@@ -288,3 +288,8 @@
 ### D52. Progresso híbrido (servidor + navegador)
 - **Decisão:** viewer avisa a página (debounce); ficha grava PUT (logado) e `localStorage` (sempre); retomada: servidor primeiro, navegador como fallback.
 - **Impacto:** anônimo continua de onde parou neste navegador; logado, em qualquer dispositivo.
+
+### D53. Acervo serve sem depender da fonte externa
+- **Decisão:** `/api/arquivo` consulta a linha do acervo primeiro (serve + conta acesso); fonte externa só quando falta `url_origem`; upsert com fallbacks da linha.
+- **Contexto:** P26.
+- **Impacto:** leitura de arquivados imune a queda das fontes.
