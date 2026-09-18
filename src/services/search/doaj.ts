@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Documento } from "@/types";
-import { fetchTexto, ProviderError, somenteHttp } from "./http";
+import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://doaj.org/api/search/articles";
@@ -65,8 +65,9 @@ function mapear(artigo: Artigo): Documento | null {
     .filter((nome): nome is string => nome !== null);
 
   const links = bibjson?.link ?? [];
+  // urlPdf sempre em https: o proxy e o download exigem https (guard anti-SSRF).
   const urlPdf =
-    somenteHttp(links.find((link) => link.content_type?.toUpperCase() === "PDF")?.url) ?? null;
+    paraHttps(links.find((link) => link.content_type?.toUpperCase() === "PDF")?.url) ?? null;
   const urlPagina =
     somenteHttp(links.find((link) => link.type === "fulltext")?.url) ??
     somenteHttp(links.find((link) => link.type === "homepage")?.url) ??

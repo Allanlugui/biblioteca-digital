@@ -229,3 +229,9 @@
 - **Contexto:** P21 — `npm install` fresco na Vercel falhava (ERESOLVE) porque `vitest@5.0.1` exige `@types/node` `^22 || >=24`.
 - **Motivo:** correção na causa (árvore de dependências válida) em vez de mascarar com `legacy-peer-deps`; runtime local já é Node 24.
 - **Impacto:** lock regenerado; revalidado typecheck/lint/testes/build.
+
+### D42. `urlPdf` sempre em https nos providers
+- **Decisão:** OpenAlex e DOAJ aplicam `paraHttps` no `urlPdf` (arXiv já aplicava); `urlPagina` segue exibível em http.
+- **Contexto:** P22 — fontes informam PDF em `http`, mas proxy/download exigem https.
+- **Motivo:** corrigir na origem (um ponto por provider) em vez de relaxar o guard; upgrade para https é seguro e o `fetchPdf` continua validando MIME + magic bytes.
+- **Impacto:** leitor e download passam a funcionar para PDFs http quando o host serve https.

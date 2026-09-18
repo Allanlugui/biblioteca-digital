@@ -85,7 +85,7 @@ export function somenteHttp(url: string | null | undefined): string | null {
   return null;
 }
 
-export function paraHttps(url: string | null): string | null {
+export function paraHttps(url: string | null | undefined): string | null {
   const http = somenteHttp(url);
   if (!http) return null;
   return http.startsWith("http://") ? `https://${http.slice("http://".length)}` : http;

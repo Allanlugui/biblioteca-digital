@@ -126,3 +126,9 @@
 - **Causa:** `@types/node@^20` incompatível com o peer do `vitest@5.0.1`; qualquer install fresco (Vercel) quebra.
 - **Resolução:** `@types/node` `^20` → `^24` (runtime local é Node 24; satisfaz os peers de `vitest` e `vite`). `npm install` regenerou o lock (404 pacotes, 0 vulnerabilidades); typecheck, lint, 31 testes e build revalidados.
 - **Prevenção:** rodar `npm ls` após mexer em devDependencies para detectar árvore inválida antes do push.
+
+### P22. Leitor falhou com 400 para PDF da USP em `http` — RESOLVIDO (código)
+- **Sintoma:** em produção, `PdfViewer` exibiu `Unexpected server response (400)` para `urlPdf=http://www.teses.usp.br/...` (OpenAlex `best_oa_location.pdf_url` em http).
+- **Causa:** o guard anti-SSRF só aceita https; OpenAlex e DOAJ repassavam `urlPdf` em http (`somenteHttp`), então `/api/proxy` devolvia 400 e `/api/download` falharia no `fetchPinned` (502). O arXiv já normalizava com `paraHttps`.
+- **Resolução:** `urlPdf` de OpenAlex e DOAJ passa por `paraHttps` (https); `urlPagina` continua como link exibível; assinatura de `paraHttps` alargada para `string | null | undefined` (campos `.nullish()` do Zod); novo `http.test.ts` com 5 testes.
+- **NÃO VALIDADO:** fetch real desse PDF da USP (rede local não alcança o host — curl timeout); confirmar no deploy Vercel.

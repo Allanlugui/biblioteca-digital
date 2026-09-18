@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { config } from "@/lib/config";
 import type { Documento } from "@/types";
-import { fetchTexto, ProviderError, somenteHttp } from "./http";
+import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://api.openalex.org/works";
@@ -50,7 +50,8 @@ function mapear(obra: Obra): Documento | null {
     .map((autoria) => autoria.author?.display_name?.trim())
     .filter((nome): nome is string => Boolean(nome));
 
-  const urlPdf = somenteHttp(obra.best_oa_location?.pdf_url);
+  // urlPdf sempre em https: o proxy e o download exigem https (guard anti-SSRF).
+  const urlPdf = paraHttps(obra.best_oa_location?.pdf_url);
   const urlPagina =
     somenteHttp(obra.best_oa_location?.landing_page_url) ??
     somenteHttp(obra.doi) ??
