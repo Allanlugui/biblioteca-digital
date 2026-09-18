@@ -92,6 +92,9 @@
 ## Bloco G — Citações (CONCLUÍDO e validado)
 - [x] ABNT, APA, MLA, Chicago, BibTeX, RIS + copiar/baixar
 
+## Bloco H — Descoberta (CONCLUÍDO e validado)
+- [x] Trabalhos relacionados por similaridade + seção na ficha
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

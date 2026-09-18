@@ -9,6 +9,7 @@ import { formatarData, linkExternoSeguro, nomesFontes } from "@/lib/apresentacao
 import { DownloadButton } from "./download-button";
 import { CitacaoBox } from "./citacao-box";
 import { GuardarEmColecao } from "./guardar-em-colecao";
+import { Relacionados } from "./relacionados";
 import { SaveButton } from "./save-button";
 
 const PdfViewer = dynamic(
@@ -176,6 +177,7 @@ export function DocumentoClient({ id }: { id: string }) {
           <h2 className="font-display text-2xl">Citar</h2>
           <CitacaoBox documento={documento} />
         </section>
+        <Relacionados id={documento.id} />
         <section aria-label="Arquivos" className="mt-8 border-t border-rule pt-6">
           <h2 className="font-display text-2xl">Arquivos</h2>
           {!documento.urlPdf ? (

@@ -338,6 +338,13 @@
 - **Decisão:** `lib/citacoes.ts` (ABNT, APA, MLA, Chicago, BibTeX, RIS) + `CitacaoBox` (troca de formato, copiar, baixar .bib/.ris); sem autores → entrada pelo título; sem data → "s.d."; seção "Citar" na ficha.
 - **Impacto:** 68 testes; E2E real (APA renderizada, zero erros).
 
+## 18/09/2026 — Bloco H (Trabalhos relacionados)
+
+### D62. Relacionados por similaridade, sem endpoints novos
+- **Decisão:** `buscarRelacionados` deriva consulta (assuntos + palavras do título) e reutiliza busca agregada, excluindo o próprio id; `GET /api/relacionados/[id]`; seção na ficha com skeleton e links diretos.
+- **Motivo:** endpoints de citação/referência variam por fonte e têm cotas frágeis; similaridade textual atende todas as fontes com a resiliência existente.
+- **Impacto:** 70 testes; E2E real (6 relacionados, zero erros).
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário
