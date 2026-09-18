@@ -2,7 +2,8 @@
 - **Data de Criação:** 16/09/2026 17:06:37,33 
 - **Data de Atualização:** 18/09/2026
 - **Estado Atual:** AUTH E-MAIL+SENHA IMPLEMENTADA — abas, recuperação, magic link secundário (79 testes, build, E2E UI OK). Fluxos com inbox pendentes do usuário.
-- **Pendente futuro:** busca web 100% universal exige API com chave (Berc brave/Google) — decisão do usuário; confirmar S2 real em produção (P24).
+- **Pendente futuro:** busca web 100% universal exige API com chave (Brave/Google) — decisão do usuário; confirmar S2 real em produção (P24).
+- **Auth 500:** trigger inocentada por teste reversível; edge íntegro (400 correto em signup inválido). Restam signup-desabilitado, hooks ou SMTP — veredito final depende dos Auth Logs (usuário).
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 
 ---

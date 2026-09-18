@@ -176,8 +176,7 @@
 - **Status:** AGUARDANDO verificação no painel.
 
 ### P30. Diagnóstico definitivo 500 no OTP — trigger própria virou hipótese principal
-- **Achado novo:** nossa migration instala trigger AFTER INSERT em `auth.users`; `signInWithOtp` cria o usuário de forma síncrona, então a trigger dispara dentro do request — exceção nela gera 500.
-- **Não confirmado:** função parece correta estaticamente; sem acesso aos logs internos.
-- **Hipóteses:** H3/H4 PROVÁVEL (trigger/constraint), H1 PROVÁVEL (SMTP), H2 INCONCLUSIVA, H5 DESCARTADA como 500, H6 DESCARTADA.
-- **Timestamps:** 15:36 local (UTC-3) = 12:36 UTC — mesmo incidente.
-- **Nada alterado:** sem código, migration, banco ou deploy (commit propositalmente pendente).
+- **Teste reversível executado:** `admin.createUser` + delete (sem e-mail): usuário criado, perfil auto-criado pela trigger, cascata limpa. **Trigger DESCARTADA (H3/H4).**
+- **Edge responde bem:** signup inválido devolve 400 correto — camada edge íntegra.
+- **Restam:** signup desabilitado, captcha/hooks, ou SMTP com rollback (H1/H5). Sem acesso aos Auth Logs internos.
+- **Nada residual:** teste apagado, tabelas intactas.
