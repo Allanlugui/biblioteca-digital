@@ -34,7 +34,9 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/down
   }
 
   const documento = await buscarDocumentoPorId(parsed.data);
-  if (!documento?.urlPdf) {
+  // Sem PDF direto, tenta resolver pela página da publicação (tudo por dentro).
+  const origemCrua = documento?.urlPdf ?? documento?.urlPagina;
+  if (!documento || !origemCrua) {
     return fail(
       API_ERROR_CODES.NOT_FOUND,
       "Documento não encontrado.",
@@ -46,7 +48,8 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/down
 
   let pdf;
   try {
-    pdf = await fetchPdfResiliente(documento.urlPdf);
+    const origem = origemCrua.startsWith("http://") ? `https://${origemCrua.slice("http://".length)}` : origemCrua;
+    pdf = await fetchPdfResiliente(origem);
   } catch (error) {
     if (error instanceof PdfError) {
       const mapped = error.toFail();

@@ -9,9 +9,11 @@ export function ResultCard({ documento, voltar }: { documento: Documento; voltar
       <div className="mb-4 flex flex-wrap items-center gap-2 text-xs font-semibold">
         <span className="rounded-sm bg-library-900 px-2.5 py-1 uppercase tracking-wider text-parchment">{nomesFontes[documento.fonte]}</span>
         {documento.urlPdf ? (
-          <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF disponível</span>
+          <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF direto</span>
+        ) : documento.urlPagina ? (
+          <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF na fonte</span>
         ) : (
-          <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Sem PDF direto</span>
+          <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Somente registro</span>
         )}
         {documento.disponivelEm.length > 1 && (
           <span className="rounded-sm bg-library-100 px-2.5 py-1 uppercase tracking-wider text-library-800">Disponível em {documento.disponivelEm.length} fontes</span>

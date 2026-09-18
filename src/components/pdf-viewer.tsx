@@ -16,7 +16,7 @@ function mensagemAmigavel(erro: unknown): string {
     return "O endereço do arquivo não foi aceito pelo serviço. Abra o PDF na origem.";
   }
   if (original.includes("(502)")) {
-    return "A fonte não retornou um PDF válido (pode ser uma página comum, não o arquivo). Abra o PDF na origem.";
+    return "Não foi possível obter o arquivo desta fonte no momento. Tente outro resultado ou mais tarde.";
   }
   return original;
 }

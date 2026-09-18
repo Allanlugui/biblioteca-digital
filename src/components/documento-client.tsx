@@ -98,7 +98,10 @@ export function DocumentoClient({ id }: { id: string }) {
   const documento = estado.data;
   const urlPagina = linkExternoSeguro(documento.urlPagina);
   const urlPdfExterno = linkExternoSeguro(documento.urlPdf);
-  const proxyDireto = urlPdfExterno ? `/api/proxy?url=${encodeURIComponent(urlPdfExterno)}` : null;
+  const temArquivo = Boolean(urlPdfExterno || urlPagina);
+  const promoverHttps = (url: string) => (url.startsWith("http://") ? `https://${url.slice("http://".length)}` : url);
+  const fonteLeitura = urlPdfExterno ?? urlPagina;
+  const proxyDireto = fonteLeitura ? `/api/proxy?url=${encodeURIComponent(promoverHttps(fonteLeitura))}` : null;
   const doiUrl = documento.doi ? `https://doi.org/${documento.doi}` : null;
 
   return (
@@ -109,9 +112,11 @@ export function DocumentoClient({ id }: { id: string }) {
           <div className="flex flex-wrap items-center gap-2 text-xs font-semibold">
             <span className="rounded-sm bg-library-900 px-2.5 py-1 uppercase tracking-wider text-parchment">{nomesFontes[documento.fonte]}</span>
             {documento.urlPdf ? (
-              <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF disponível</span>
+              <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF direto</span>
+            ) : documento.urlPagina ? (
+              <span className="rounded-sm border border-gilt-600/50 bg-gilt-100 px-2.5 py-1 uppercase tracking-wider text-gilt-700">PDF na fonte</span>
             ) : (
-              <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Registro sem PDF direto</span>
+              <span className="rounded-sm border border-rule px-2.5 py-1 uppercase tracking-wider text-ink-soft">Somente registro</span>
             )}
             {documento.disponivelEm.length > 1 && (
               <span className="rounded-sm bg-library-100 px-2.5 py-1 uppercase tracking-wider text-library-800">Disponível em {documento.disponivelEm.length} fontes</span>
@@ -180,14 +185,16 @@ export function DocumentoClient({ id }: { id: string }) {
         <Relacionados id={documento.id} />
         <section aria-label="Arquivos" className="mt-8 border-t border-rule pt-6">
           <h2 className="font-display text-2xl">Arquivos</h2>
-          {!documento.urlPdf ? (
-            <p className="mt-3 text-sm italic text-ink-soft">A fonte não disponibiliza o PDF deste registro. Consulte a página da publicação.</p>
+          {!temArquivo ? (
+            <p className="mt-3 text-sm italic text-ink-soft">Este registro não traz arquivo nem página para resolver. Tente outro resultado.</p>
           ) : (
             <div className="mt-4 flex flex-wrap items-center gap-4">
               <DownloadButton id={documento.id} />
               <SaveButton id={documento.id} />
-              {urlPdfExterno && <a href={urlPdfExterno} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">Abrir PDF na origem<span className="sr-only"> (abre em nova aba)</span></a>}
             </div>
+          )}
+          {!temArquivo && (
+            <div className="mt-4"><SaveButton id={documento.id} /></div>
           )}
           <div className="mt-4 max-w-xl">
             <GuardarEmColecao documentoId={documento.id} />
@@ -205,7 +212,7 @@ export function DocumentoClient({ id }: { id: string }) {
             {urlPagina && <a href={urlPagina} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">Ver registro original<span className="sr-only"> (abre em nova aba)</span></a>}
           </div>
         </section>
-        {documento.urlPdf && !leitorAberto && (
+        {temArquivo && !leitorAberto && (
           <button onClick={abrirLeitor} className="mt-8 w-full rounded-md border-2 border-library-800 px-6 py-3 font-semibold text-library-800 hover:bg-library-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-library-700 sm:w-auto">
             Ler no navegador
           </button>

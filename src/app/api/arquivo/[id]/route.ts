@@ -80,8 +80,11 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
     return ok({ url: urlPublica(admin, arquivado.storage_path) }, headers);
   }
 
-  // Origem do PDF: a linha do acervo (quando existe) ou a fonte externa.
+  // Origem do arquivo: PDF direto ou, sem ele, a página da publicação
+  // (a descoberta resolve por dentro). A fonte externa só é consultada
+  // quando o acervo não tem nem uma coisa nem outra.
   let urlPdf: string | null = typeof arquivado?.url_origem === "string" && arquivado.url_origem ? arquivado.url_origem : null;
+  let urlPagina: string | null = typeof arquivado?.url_pagina === "string" && arquivado.url_pagina ? arquivado.url_pagina : null;
   let documento: {
     fonte: string;
     titulo: string;
@@ -99,14 +102,14 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
   if (!urlPdf) {
     try {
       const daFonte = await buscarDocumentoPorId(parsed.data);
-      if (daFonte?.urlPdf) {
+      if (daFonte?.urlPdf || daFonte?.urlPagina) {
         documento = {
           fonte: daFonte.fonte,
           titulo: daFonte.titulo,
           autores: daFonte.autores,
           descricao: daFonte.descricao,
           dataPublicacao: daFonte.dataPublicacao,
-          urlPdf: daFonte.urlPdf,
+          urlPdf: daFonte.urlPdf ?? "",
           urlPagina: daFonte.urlPagina,
           doi: daFonte.doi,
           citacoes: daFonte.citacoes,
@@ -115,18 +118,23 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
           tipo: daFonte.tipo,
         };
         urlPdf = daFonte.urlPdf;
+        urlPagina = urlPagina ?? daFonte.urlPagina;
       }
     } catch {
       // Fonte indisponível: 404 honesto abaixo.
     }
   }
-  if (!urlPdf) {
+  // Sem PDF direto, a página da publicação vira ponto de partida da descoberta.
+  const origemCrua = urlPdf ?? urlPagina;
+  if (!origemCrua) {
     return fail(API_ERROR_CODES.NOT_FOUND, "Documento não encontrado.", 404, undefined, headers);
   }
+  // O guard exige https: promove http da página antes de validar.
+  const origem = origemCrua.startsWith("http://") ? `https://${origemCrua.slice("http://".length)}` : origemCrua;
 
   let alvo: string;
   try {
-    alvo = (await assertPublicHttpsUrl(urlPdf)).url.toString();
+    alvo = (await assertPublicHttpsUrl(origem)).url.toString();
   } catch (error) {
     if (error instanceof UrlGuardError) {
       const statusByCode: Record<string, number> = {
@@ -186,7 +194,7 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
           autores: documento?.autores ?? arquivado?.autores ?? [],
           descricao: documento?.descricao ?? arquivado?.descricao ?? null,
           data_publicacao: documento?.dataPublicacao ?? arquivado?.data_publicacao ?? null,
-          url_origem: urlPdf,
+          url_origem: origem,
           url_pagina: documento?.urlPagina ?? arquivado?.url_pagina ?? null,
           doi: documento?.doi ?? arquivado?.doi ?? null,
           citacoes: documento?.citacoes ?? arquivado?.citacoes ?? null,

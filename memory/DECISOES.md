@@ -382,6 +382,12 @@
 - **Decisão:** diante de MIME não-PDF, baixa o HTML (teto 2MB) e extrai `citation_pdf_url` + âncoras (.pdf, /download/, texto PDF), tentando uma vez com as mesmas validações (guard, MIME, magic, tamanho).
 - **Impacto:** caso PUCRS (OJS sem extensão .pdf) passou de 502 a 200; 83 testes; proxy, download e ingest usam o caminho novo.
 
+## 18/09/2026 — Biblioteca 100% interna
+
+### D72. Ler/Baixar resolvem tudo por dentro; saída só no crédito
+- **Decisão:** download, arquivo e leitor aceitam `urlPagina` como ponto de partida (descoberta + https); selos "PDF direto"/"PDF na fonte"/"Somente registro"; removidos "Abrir PDF na origem" e "Página da publicação" como ação; mantidos "Ver registro original" discreto + DOI (transparência legal).
+- **Impacto:** E2E real em DOAJ sem PDF (selo, botões, zero saídas, canvas renderizado); 83 testes; build OK.
+
 ## 18/09/2026 — Auth e-mail + senha (pós-diagnóstico)
 
 ### D70. Login principal com senha; magic link secundário
