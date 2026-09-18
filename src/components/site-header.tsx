@@ -11,8 +11,8 @@ function Marca() {
         </svg>
       </span>
       <span className="leading-tight">
-        <span className="block font-display text-xl tracking-wide text-parchment">Biblioteca Digital</span>
-        <span className="block text-[11px] font-semibold uppercase tracking-[0.28em] text-gilt-400">Acesso aberto</span>
+        <span className="block font-display text-lg tracking-wide text-parchment sm:text-xl">Biblioteca Digital</span>
+        <span className="block text-[10px] font-semibold uppercase tracking-[0.28em] text-gilt-400 sm:text-[11px]">Acesso aberto</span>
       </span>
     </Link>
   );
@@ -31,8 +31,9 @@ async function AreaUsuario() {
   }
   return (
     <>
-      <Link href="/estante" className="rounded px-3 py-2 text-parchment/90 hover:bg-white/10 hover:text-parchment focus-visible:outline-2 focus-visible:outline-gilt-400">
-        Minha estante
+      <Link href="/estante" className="whitespace-nowrap rounded px-2 py-2 text-parchment/90 hover:bg-white/10 hover:text-parchment focus-visible:outline-2 focus-visible:outline-gilt-400 sm:px-3">
+        <span className="sm:hidden">Estante</span>
+        <span className="hidden sm:inline">Minha estante</span>
       </Link>
       <form action="/auth/sair" method="post" className="inline">
         <button type="submit" className="rounded px-3 py-2 text-parchment/70 hover:bg-white/10 hover:text-parchment focus-visible:outline-2 focus-visible:outline-gilt-400">
@@ -47,14 +48,14 @@ export async function SiteHeader() {
   return (
     <header className="bg-library-950 text-parchment">
       <div aria-hidden="true" className="h-1 bg-gradient-to-r from-gilt-700 via-gilt-400 to-gilt-700" />
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-6 py-4">
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-4 sm:gap-6 sm:px-6">
         <Marca />
-        <nav aria-label="Navegação principal" className="flex items-center gap-1 text-sm font-semibold">
-          <Link href="/" className="rounded px-3 py-2 text-parchment/90 hover:bg-white/10 hover:text-parchment focus-visible:outline-2 focus-visible:outline-gilt-400">
+        <nav aria-label="Navegação principal" className="flex shrink-0 items-center gap-1 text-sm font-semibold">
+          <Link href="/" className="hidden rounded px-3 py-2 text-parchment/90 hover:bg-white/10 hover:text-parchment focus-visible:outline-2 focus-visible:outline-gilt-400 sm:block">
             Início
           </Link>
           <AreaUsuario />
-          <Link href="/busca" className="rounded border border-gilt-400/60 bg-gilt-400/10 px-4 py-2 text-gilt-100 hover:bg-gilt-400/20 focus-visible:outline-2 focus-visible:outline-gilt-400">
+          <Link href="/busca" className="whitespace-nowrap rounded border border-gilt-400/60 bg-gilt-400/10 px-3 py-2 text-[13px] text-gilt-100 hover:bg-gilt-400/20 focus-visible:outline-2 focus-visible:outline-gilt-400 sm:px-4 sm:text-sm">
             Buscar no acervo
           </Link>
         </nav>

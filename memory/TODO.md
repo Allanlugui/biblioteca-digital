@@ -95,6 +95,10 @@
 ## Bloco H — Descoberta (CONCLUÍDO e validado)
 - [x] Trabalhos relacionados por similaridade + seção na ficha
 
+## Bloco I — UX/UI (CONCLUÍDO e validado)
+- [x] Header mobile compacto, overflow-x zerado, screenshots 390px
+- [x] Dark mode avaliado e descartado (identidade clara)
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

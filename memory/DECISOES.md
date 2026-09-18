@@ -345,6 +345,12 @@
 - **Motivo:** endpoints de citação/referência variam por fonte e têm cotas frágeis; similaridade textual atende todas as fontes com a resiliência existente.
 - **Impacto:** 70 testes; E2E real (6 relacionados, zero erros).
 
+## 18/09/2026 — Bloco I (UX mobile + acessibilidade)
+
+### D63. Header compacto no mobile; sem dark mode
+- **Decisão:** marca reduzida, "Início" só em ≥sm (a marca já volta ao início), "Minha estante" vira "Estante" no mobile, CTA sem quebra de linha; overflow-x 24px → 0. Dark mode descartado: identidade é a sala de leitura clara (D43); contraste e foco já atendem.
+- **Impacto:** validado em 390px nas 3 telas (screenshots); filtros, ficha e leitor já empilhavam bem.
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário
