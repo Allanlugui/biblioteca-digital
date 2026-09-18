@@ -16,6 +16,7 @@ export type ServerConfig = {
   googleOAuthClientId: string;
   googleOAuthClientSecret: string;
   googleOAuthRefreshToken: string;
+  googleCloudProject: string;
 };
 
 function readPositiveInt(name: string, fallback: number): number {
@@ -52,4 +53,5 @@ export const config: ServerConfig = {
   googleOAuthClientId: process.env.GOOGLE_OAUTH_CLIENT_ID?.trim() ?? "",
   googleOAuthClientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET?.trim() ?? "",
   googleOAuthRefreshToken: process.env.GOOGLE_OAUTH_REFRESH_TOKEN?.trim() ?? "",
+  googleCloudProject: process.env.GOOGLE_CLOUD_PROJECT?.trim() ?? "",
 };

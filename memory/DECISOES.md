@@ -401,6 +401,10 @@
 - **Decisão:** `lib/armazenamento` (interface + drivers + seleção por env); Drive com JWT RS256 via stdlib, escopo mínimo `drive.file`, pasta compartilhada; leitura sempre pela rota interna `/bytes` (sem CORS/telas do Google); `storage_path` com prefixo `drive:`.
 - **Impacto:** 88 testes; E2E em modo supabase sem regressão; Drive real pendente das credenciais do usuário.
 
+### D76. Drive via OAuth próprio (conta de serviço sem cota)
+- **Decisão:** service account descartada para upload (403 sem cota); OAuth da conta do usuário via gcloud ADC + `X-Goog-User-Project`; legado supabase servido direto em qualquer modo.
+- **Impacto:** ingest real no Drive validado (2.2MB, `drive:*`, leitura via /bytes).
+
 ## 18/09/2026 — Só arquivos baixáveis por padrão
 
 ### D74. soPdf padrão via select explícito (sem checkbox ambíguo)

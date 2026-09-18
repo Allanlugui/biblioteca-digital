@@ -15,7 +15,10 @@ async function cabecalhos(): Promise<Record<string, string>> {
   const credencial = lerCredencialOAuth();
   if (!credencial) throw new Error("Google Drive não configurado.");
   const token = await obterAccessTokenOAuth(credencial);
-  return { Authorization: `Bearer ${token}` };
+  const headers: Record<string, string> = { Authorization: `Bearer ${token}` };
+  // ADC exige projeto de cota explícito por request.
+  if (config.googleCloudProject) headers["X-Goog-User-Project"] = config.googleCloudProject;
+  return headers;
 }
 
 // Procura o arquivo pelo nome exato dentro da pasta (dedup antes de subir).
