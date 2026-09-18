@@ -1,7 +1,7 @@
 # Status do Projeto: biblioteca-digital 
 - **Data de Criação:** 16/09/2026 17:06:37,33 
 - **Data de Atualização:** 18/09/2026
-- **Estado Atual:** FASE 9 CONCLUÍDA E VALIDADA — Supabase (acervo + painel), 42 testes, build, E2E completo OK. Falta: rodar a migration no projeto Supabase + chaves reais.
+- **Estado Atual:** FASE 9 VALIDADA COM CHAVES REAIS — migration aplicada (6 tabelas + bucket), ingest real OK (Tierkreis 489KB no Storage por hash), busca agregada contando. Falta: teste do magic link (só o usuário tem o inbox).
 - **Pendente futuro:** busca web 100% universal exige API com chave (Berc brave/Google) — decisão do usuário; confirmar S2 real em produção (P24).
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 

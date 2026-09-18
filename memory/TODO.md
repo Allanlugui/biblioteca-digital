@@ -55,6 +55,7 @@
 - [x] Ingest automático `/api/arquivo/[id]` com fallback ao proxy
 - [x] Painel `/estante` (continuar lendo, salvos, buscas) + salvar na ficha
 - [x] Progresso híbrido servidor + navegador
-- [ ] Rodar migration no SQL Editor do Supabase (usuário)
-- [ ] Preencher `.env.local` + envs da Vercel com as chaves reais (usuário)
-- [ ] Validar fluxo logado de ponta a ponta em produção
+- [x] Rodar migration no SQL Editor do Supabase (usuário)
+- [x] Preencher `.env.local` + envs da Vercel com as chaves reais (usuário)
+- [x] Ingest real validado (documento + agregada + arquivo no bucket)
+- [ ] Validar fluxo logado de ponta a ponta (magic link no e-mail do usuário)
