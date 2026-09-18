@@ -1,7 +1,7 @@
 # Status do Projeto: biblioteca-digital 
 - **Data de Criação:** 16/09/2026 17:06:37,33 
 - **Data de Atualização:** 18/09/2026
-- **Estado Atual:** NO GITHUB — `origin/master` sincronizado (`github.com/Allanlugui/biblioteca-digital`). Falta: importar na Vercel.
+- **Estado Atual:** NO GITHUB — `origin/master` sincronizado (`github.com/Allanlugui/biblioteca-digital`). Deploy Vercel: 1ª tentativa falhou no install (P21, corrigido com `@types/node@^24`); aguardando redeploy.
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 
 ---

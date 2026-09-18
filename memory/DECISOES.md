@@ -223,3 +223,9 @@
 - **Contexto:** D6 adiava o `git init`; `.env*` no `.gitignore` excluía `.env.example` (corrigido com `!.env.example`); 4 `.gitkeep` obsoletos removidos (pastas já têm conteúdo).
 - **Motivo:** pronto-para-commit exigia working tree válido para GitHub/Vercel; `memory/` é doc operacional referenciada pelo README.
 - **Impacto:** push pendente de `git remote add origin <url>`; deploy Vercel via import do painel (zero-config).
+
+### D41. `@types/node@^24` para satisfazer peer do vitest
+- **Decisão:** `@types/node` `^20` → `^24` (devDependency, só tipos — sem efeito em runtime).
+- **Contexto:** P21 — `npm install` fresco na Vercel falhava (ERESOLVE) porque `vitest@5.0.1` exige `@types/node` `^22 || >=24`.
+- **Motivo:** correção na causa (árvore de dependências válida) em vez de mascarar com `legacy-peer-deps`; runtime local já é Node 24.
+- **Impacto:** lock regenerado; revalidado typecheck/lint/testes/build.

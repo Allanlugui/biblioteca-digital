@@ -118,3 +118,11 @@
 - **Sintoma:** `npm run test` falhava com `Cannot find package vite`.
 - **Causa:** `npm install -D vitest` não instalou o peer automaticamente.
 - **Resolução:** `npm install -D vite`; ambas como devDependencies (0 vulnerabilidades no audit).
+
+## 18/09/2026 — Deploy Vercel
+
+### P21. `npm install` na Vercel falhou (ERESOLVE: vitest × `@types/node`) — RESOLVIDO
+- **Sintoma:** build na Vercel (`iad1`) falhou no `npm install`: `vitest@5.0.1` pede `peerOptional @types/node@"^22.0.0 || >=24.0.0"`, mas o projeto tinha `@types/node@20.19.43`. Localmente a árvore também estava inválida (`npm ls` acusava `invalid`), mas o install local passava por causa do lockfile existente.
+- **Causa:** `@types/node@^20` incompatível com o peer do `vitest@5.0.1`; qualquer install fresco (Vercel) quebra.
+- **Resolução:** `@types/node` `^20` → `^24` (runtime local é Node 24; satisfaz os peers de `vitest` e `vite`). `npm install` regenerou o lock (404 pacotes, 0 vulnerabilidades); typecheck, lint, 31 testes e build revalidados.
+- **Prevenção:** rodar `npm ls` após mexer em devDependencies para detectar árvore inválida antes do push.
