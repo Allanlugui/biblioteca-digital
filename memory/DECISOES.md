@@ -314,6 +314,12 @@
 - **Contexto:** expostos `arxivId` (OpenAlex `ids`, S2 `externalIds.ArXiv`, arXiv canônico); `referencias` segue adiado.
 - **Impacto:** teste antigo de fusão por título curto atualizado para a regra anti-falso-positivo; 60 testes; validado na UI real (2 obras fundidas).
 
+## 18/09/2026 — Bloco D (Ficha completa)
+
+### D58. Ficha em 4 seções só com dados reais
+- **Decisão:** Informações (selos, título, dl com autoria/data/DOI/citações/tipo/idioma + chips de assuntos), Resumo, Arquivos (PDF status, ler/baixar/salvar ou aviso honesto), Origem (fonte + ver registro original). Referências omitidas (fontes não fornecem sem chamadas extras — ver D55).
+- **Impacto:** só apresentação sobre os metadados do Bloco A; 60 testes; validado com screenshot real.
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário

@@ -75,6 +75,10 @@
 - [x] Camadas DOI → arXivId → URL → obra conservadora
 - [x] Merge com `disponivelEm` + selo "Disponível em N fontes"
 
+## Bloco D — Ficha do documento (CONCLUÍDO e validado)
+- [x] Seções Informações, Resumo, Arquivos e Origem
+- [x] DOI, citações, tipo, idioma, assuntos (só quando disponíveis)
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README
