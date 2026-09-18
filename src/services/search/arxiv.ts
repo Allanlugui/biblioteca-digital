@@ -2,6 +2,7 @@ import { XMLParser } from "fast-xml-parser";
 import { z } from "zod";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError } from "./http";
+import { limparLista, normalizarDoi } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://export.arxiv.org/api/query";
@@ -10,7 +11,7 @@ const parser = new XMLParser({
   ignoreAttributes: false,
   attributeNamePrefix: "",
   trimValues: true,
-  isArray: (tagName) => tagName === "entry" || tagName === "author" || tagName === "link",
+  isArray: (tagName) => tagName === "entry" || tagName === "author" || tagName === "link" || tagName === "category",
 });
 
 const linkSchema = z.object({
@@ -24,6 +25,10 @@ const autorSchema = z.object({
   name: z.string().nullish(),
 });
 
+const categoriaSchema = z.object({
+  term: z.string().nullish(),
+});
+
 const entradaSchema = z.object({
   id: z.string().nullish(),
   title: z.string().nullish(),
@@ -32,6 +37,8 @@ const entradaSchema = z.object({
   author: z.array(autorSchema).nullish(),
   summary: z.string().nullish(),
   link: z.array(linkSchema).nullish(),
+  category: z.array(categoriaSchema).nullish(),
+  "arxiv:doi": z.string().nullish(),
 });
 
 type Entrada = z.infer<typeof entradaSchema>;
@@ -96,6 +103,11 @@ function mapear(entrada: Entrada): Documento | null {
     descricao: normalizarTexto(entrada.summary),
     dataPublicacao: entrada.published?.slice(0, 10) ?? null,
     tamanhoBytes: null,
+    doi: normalizarDoi(entrada["arxiv:doi"]),
+    citacoes: null,
+    assuntos: limparLista((entrada.category ?? []).map((categoria) => categoria.term)),
+    idioma: "en",
+    tipo: "preprint",
   };
 }
 

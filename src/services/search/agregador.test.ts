@@ -11,6 +11,11 @@ function doc(parcial: Partial<Documento> & { id: string; titulo: string }): Docu
     descricao: null,
     dataPublicacao: null,
     tamanhoBytes: null,
+    doi: null,
+    citacoes: null,
+    assuntos: [],
+    idioma: null,
+    tipo: null,
     ...parcial,
   };
 }

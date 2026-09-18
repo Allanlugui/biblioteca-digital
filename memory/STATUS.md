@@ -1,7 +1,7 @@
 # Status do Projeto: biblioteca-digital 
 - **Data de Criação:** 16/09/2026 17:06:37,33 
 - **Data de Atualização:** 18/09/2026
-- **Estado Atual:** FASE 10 CONCLUÍDA NO CÓDIGO — busca universal (5ª fonte Web) implementada e testada (46 testes, build OK). Falta: chave do Google (usuário) para ativar.
+- **Estado Atual:** BLOCO A CONCLUÍDO NO CÓDIGO — Documento enriquecido + normalizador (51 testes, build OK, campos reais validados). Falta: rodar migration 0002 no Supabase (obrigatória antes do uso).
 - **Pendente futuro:** busca web 100% universal exige API com chave (Berc brave/Google) — decisão do usuário; confirmar S2 real em produção (P24).
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 
@@ -311,3 +311,28 @@ Detalhamento das tarefas em `memory/TODO.md`.
 * Correções aplicadas: `.gitignore` com `!.env.example` (o pattern `.env*` o excluía) e `.obsidian/` ignorado; 4 `.gitkeep` obsoletos removidos.
 * Pendente: `git remote add origin <url>` + `git push -u origin master`, depois importar na Vercel pelo painel.
 * 18/09/2026 — push executado: remoto `origin` = `github.com/Allanlugui/biblioteca-digital`, branch `master` com upstream configurado. Próximo: import na Vercel.
+
+---
+
+## 12. Bloco 0 — Auditoria (prompt mestre, sem alterar código)
+
+### O que existe e funciona (validado)
+* Busca agregada: OpenAlex, arXiv, DOAJ, Semantic Scholar (+ Web com chave) com isolamento por provider, cache 5min, dedup por título/URL, ranking simples.
+* Ficha do documento, download direto, proxy com guard anti-SSRF, leitor-livro paginado, ingest no Supabase Storage por hash.
+* Auth magic link + estante + histórico + progresso (servidor e localStorage), RLS default deny.
+* 46 testes Vitest, typecheck, lint, build verdes; E2E reais executados por fase.
+
+### Lacunas mapeadas (ordem dos blocos)
+* A: `Documento` sem doi/citações/referências/assuntos/idioma/tipo; sem camada de normalização única.
+* B: busca só `q`+`limite`; sem filtros (data, fonte, tipo, PDF), ordenação ou paginação.
+* C: dedup sem DOI/identificadores fortes, sem "disponível em N fontes".
+* D: ficha sem resumo/DOI/citações/assuntos (depende do Bloco A).
+* E: leitor sem zoom, busca no texto, tela cheia.
+* F: sem coleções; histórico/estante exigem login (decisão: manter auth, sem modo local além do progresso anônimo atual).
+* G/H: sem citações nem relacionados. J: sem PWA, sitemap, robots, OG.
+* K: rate-limit em memória; Storage gratuito 1GB; S2 429 sem chave.
+
+### Riscos e preservação
+* Não reescrever: serviços, guard, contratos e RLS ficam; evoluir por acréscimo.
+* Web/S2 degradam com graça sem chave — preservar esse comportamento.
+* `memory/` e `.env.local` (gitignored) intocados.

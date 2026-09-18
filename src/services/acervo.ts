@@ -24,6 +24,11 @@ export async function garantirDocumento(id: string): Promise<boolean> {
     data_publicacao: documento.dataPublicacao,
     url_origem: documento.urlPdf ?? "",
     url_pagina: documento.urlPagina,
+    doi: documento.doi,
+    citacoes: documento.citacoes,
+    assuntos: documento.assuntos,
+    idioma: documento.idioma,
+    tipo: documento.tipo,
   });
   return !error;
 }

@@ -294,6 +294,13 @@
 - **Contexto:** P26.
 - **Impacto:** leitura de arquivados imune a queda das fontes.
 
+## 18/09/2026 — Bloco A (Fundação: Documento enriquecido)
+
+### D55. Novos campos com honestidade por fonte
+- **Decisão:** `doi`, `citacoes`, `assuntos`, `idioma`, `tipo` em `Documento` + normalizador único (`normalizar.ts`); OpenAlex (doi, cited_by_count, concepts, language, type), arXiv (doi do journal, categories, `en`/`preprint` factuais), DOAJ (doi, keywords+subjects, idioma, `article`), S2 (DOI, citationCount, fieldsOfStudy), Web (nulos).
+- **Contexto:** `referencias` adiado (exigiria chamadas extras por obra); `idioma`/`tipo` literais do arXiv/DOAJ/S2 são factuais da fonte, não inferência.
+- **Impacto:** migration `0002_documento_enriquecido.sql` (colunas anuláveis); inserts atualizados; 51 testes; UI intacta.
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário

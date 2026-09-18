@@ -2,10 +2,11 @@ import { z } from "zod";
 import { config } from "@/lib/config";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
+import { limparLista, normalizarContagem, normalizarDoi, normalizarIdioma } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://api.openalex.org/works";
-const CAMPOS = "id,display_name,doi,publication_date,authorships,open_access,best_oa_location";
+const CAMPOS = "id,display_name,doi,publication_date,authorships,open_access,best_oa_location,cited_by_count,concepts,language,type";
 
 const autoriaSchema = z.object({
   author: z
@@ -18,6 +19,10 @@ const localizacaoSchema = z.object({
   landing_page_url: z.string().nullish(),
 });
 
+const conceitoSchema = z.object({
+  display_name: z.string().nullish(),
+});
+
 const obraSchema = z.object({
   id: z.string(),
   display_name: z.string().nullish(),
@@ -28,6 +33,10 @@ const obraSchema = z.object({
     .object({ oa_url: z.string().nullish(), is_oa: z.boolean().nullish() })
     .nullish(),
   best_oa_location: localizacaoSchema.nullish(),
+  cited_by_count: z.number().nullish(),
+  concepts: z.array(conceitoSchema).nullish(),
+  language: z.string().nullish(),
+  type: z.string().nullish(),
 });
 
 type Obra = z.infer<typeof obraSchema>;
@@ -67,6 +76,11 @@ function mapear(obra: Obra): Documento | null {
     descricao: null,
     dataPublicacao: obra.publication_date ?? null,
     tamanhoBytes: null,
+    doi: normalizarDoi(obra.doi),
+    citacoes: normalizarContagem(obra.cited_by_count),
+    assuntos: limparLista((obra.concepts ?? []).map((conceito) => conceito.display_name)),
+    idioma: normalizarIdioma(obra.language),
+    tipo: obra.type?.trim() || null,
   };
 }
 

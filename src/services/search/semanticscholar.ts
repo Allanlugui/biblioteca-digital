@@ -2,10 +2,11 @@ import { z } from "zod";
 import { config } from "@/lib/config";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
+import { limparLista, normalizarContagem, normalizarDoi } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://api.semanticscholar.org/graph/v1";
-const CAMPOS = "title,abstract,authors,year,publicationDate,openAccessPdf,externalIds,url";
+const CAMPOS = "title,abstract,authors,year,publicationDate,openAccessPdf,externalIds,url,citationCount,fieldsOfStudy";
 
 const autorSchema = z.object({
   name: z.string().nullish(),
@@ -24,6 +25,9 @@ const artigoSchema = z.object({
   publicationDate: z.string().nullish(),
   authors: z.array(autorSchema).nullish(),
   openAccessPdf: pdfAbertoSchema.nullish(),
+  externalIds: z.object({ DOI: z.string().nullish() }).nullish(),
+  citationCount: z.number().nullish(),
+  fieldsOfStudy: z.array(z.string()).nullish(),
   url: z.string().nullish(),
 });
 
@@ -69,6 +73,11 @@ function mapear(artigo: Artigo): Documento | null {
     descricao: normalizarTexto(artigo.abstract),
     dataPublicacao: dataPublicacao(artigo.publicationDate, artigo.year),
     tamanhoBytes: null,
+    doi: normalizarDoi(artigo.externalIds?.DOI),
+    citacoes: normalizarContagem(artigo.citationCount),
+    assuntos: limparLista(artigo.fieldsOfStudy ?? []),
+    idioma: null,
+    tipo: "article",
   };
 }
 

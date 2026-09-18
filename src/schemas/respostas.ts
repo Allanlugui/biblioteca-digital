@@ -10,6 +10,11 @@ export const documentoRespostaSchema = z.object({
   descricao: z.string().nullable(),
   dataPublicacao: z.string().nullable(),
   tamanhoBytes: z.number().nullable(),
+  doi: z.string().nullable(),
+  citacoes: z.number().nullable(),
+  assuntos: z.array(z.string()),
+  idioma: z.string().nullable(),
+  tipo: z.string().nullable(),
 });
 
 export const buscaRespostaSchema = z.object({

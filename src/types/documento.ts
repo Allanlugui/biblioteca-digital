@@ -16,4 +16,10 @@ export type Documento = {
   descricao: string | null;
   dataPublicacao: string | null;
   tamanhoBytes: number | null;
+  // Metadados enriquecidos (Bloco A): só o que a fonte informa; ausentes viram null/[].
+  doi: string | null;
+  citacoes: number | null;
+  assuntos: string[];
+  idioma: string | null;
+  tipo: string | null;
 };

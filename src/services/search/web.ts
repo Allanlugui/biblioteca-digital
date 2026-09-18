@@ -60,6 +60,11 @@ function mapear(item: Item): Documento | null {
     descricao: normalizarTexto(item.snippet),
     dataPublicacao: null,
     tamanhoBytes: null,
+    doi: null,
+    citacoes: null,
+    assuntos: [],
+    idioma: null,
+    tipo: null,
   };
 }
 
@@ -120,7 +125,7 @@ export const webProvider: SearchProvider = {
       if (!admin) return null;
       const { data } = await admin
         .from("documentos")
-        .select("id, fonte, titulo, autores, descricao, data_publicacao, url_origem, url_pagina")
+        .select("id, fonte, titulo, autores, descricao, data_publicacao, url_origem, url_pagina, doi, citacoes, assuntos, idioma, tipo")
         .eq("id", `web_${externalId}`)
         .maybeSingle();
       if (!data || data.fonte !== "web") return null;
@@ -134,6 +139,11 @@ export const webProvider: SearchProvider = {
         descricao: typeof data.descricao === "string" ? data.descricao : null,
         dataPublicacao: typeof data.data_publicacao === "string" ? data.data_publicacao : null,
         tamanhoBytes: null,
+        doi: typeof data.doi === "string" ? data.doi : null,
+        citacoes: typeof data.citacoes === "number" ? data.citacoes : null,
+        assuntos: Array.isArray(data.assuntos) ? data.assuntos.filter((a): a is string => typeof a === "string") : [],
+        idioma: typeof data.idioma === "string" ? data.idioma : null,
+        tipo: typeof data.tipo === "string" ? data.tipo : null,
       };
     } catch {
       return null;

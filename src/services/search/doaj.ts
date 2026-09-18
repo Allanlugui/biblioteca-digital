@@ -1,6 +1,7 @@
 import { z } from "zod";
 import type { Documento } from "@/types";
 import { fetchTexto, paraHttps, ProviderError, somenteHttp } from "./http";
+import { limparLista, normalizarDoi, normalizarIdioma } from "./normalizar";
 import type { SearchProvider } from "./types";
 
 const BASE = "https://doaj.org/api/search/articles";
@@ -15,12 +16,29 @@ const autorSchema = z.object({
   name: z.string().nullish(),
 });
 
+const identificadorSchema = z.object({
+  type: z.string().nullish(),
+  id: z.string().nullish(),
+});
+
+const assuntoSchema = z.object({
+  term: z.string().nullish(),
+});
+
+const periodicoSchema = z.object({
+  language: z.array(z.string()).nullish(),
+});
+
 const bibjsonSchema = z.object({
   title: z.string().nullish(),
   author: z.array(autorSchema).nullish(),
   year: z.union([z.string(), z.number()]).nullish(),
   month: z.union([z.string(), z.number()]).nullish(),
   link: z.array(linkSchema).nullish(),
+  identifier: z.array(identificadorSchema).nullish(),
+  keywords: z.array(z.string()).nullish(),
+  subject: z.array(assuntoSchema).nullish(),
+  journal: periodicoSchema.nullish(),
 });
 
 const artigoSchema = z.object({
@@ -73,6 +91,13 @@ function mapear(artigo: Artigo): Documento | null {
     somenteHttp(links.find((link) => link.type === "homepage")?.url) ??
     somenteHttp(links[0]?.url);
 
+  const identificadores = bibjson?.identifier ?? [];
+  const doi = normalizarDoi(identificadores.find((item) => item.type?.toLowerCase() === "doi")?.id);
+  const assuntos = limparLista([
+    ...(bibjson?.keywords ?? []),
+    ...(bibjson?.subject ?? []).map((assunto) => assunto.term),
+  ]);
+
   return {
     id: `doaj_${artigo.id}`,
     titulo,
@@ -83,6 +108,11 @@ function mapear(artigo: Artigo): Documento | null {
     descricao: null,
     dataPublicacao: dataPublicacao(bibjson?.year, bibjson?.month),
     tamanhoBytes: null,
+    doi,
+    citacoes: null,
+    assuntos,
+    idioma: normalizarIdioma(bibjson?.journal?.language?.[0]),
+    tipo: "article",
   };
 }
 

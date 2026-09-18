@@ -82,12 +82,38 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
 
   // Origem do PDF: a linha do acervo (quando existe) ou a fonte externa.
   let urlPdf: string | null = typeof arquivado?.url_origem === "string" && arquivado.url_origem ? arquivado.url_origem : null;
-  let documento: { fonte: string; titulo: string; autores: string[]; descricao: string | null; dataPublicacao: string | null; urlPdf: string; urlPagina: string | null } | null = null;
+  let documento: {
+    fonte: string;
+    titulo: string;
+    autores: string[];
+    descricao: string | null;
+    dataPublicacao: string | null;
+    urlPdf: string;
+    urlPagina: string | null;
+    doi: string | null;
+    citacoes: number | null;
+    assuntos: string[];
+    idioma: string | null;
+    tipo: string | null;
+  } | null = null;
   if (!urlPdf) {
     try {
       const daFonte = await buscarDocumentoPorId(parsed.data);
       if (daFonte?.urlPdf) {
-        documento = { fonte: daFonte.fonte, titulo: daFonte.titulo, autores: daFonte.autores, descricao: daFonte.descricao, dataPublicacao: daFonte.dataPublicacao, urlPdf: daFonte.urlPdf, urlPagina: daFonte.urlPagina };
+        documento = {
+          fonte: daFonte.fonte,
+          titulo: daFonte.titulo,
+          autores: daFonte.autores,
+          descricao: daFonte.descricao,
+          dataPublicacao: daFonte.dataPublicacao,
+          urlPdf: daFonte.urlPdf,
+          urlPagina: daFonte.urlPagina,
+          doi: daFonte.doi,
+          citacoes: daFonte.citacoes,
+          assuntos: daFonte.assuntos,
+          idioma: daFonte.idioma,
+          tipo: daFonte.tipo,
+        };
         urlPdf = daFonte.urlPdf;
       }
     } catch {
@@ -162,6 +188,11 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
           data_publicacao: documento?.dataPublicacao ?? arquivado?.data_publicacao ?? null,
           url_origem: urlPdf,
           url_pagina: documento?.urlPagina ?? arquivado?.url_pagina ?? null,
+          doi: documento?.doi ?? arquivado?.doi ?? null,
+          citacoes: documento?.citacoes ?? arquivado?.citacoes ?? null,
+          assuntos: documento?.assuntos ?? arquivado?.assuntos ?? [],
+          idioma: documento?.idioma ?? arquivado?.idioma ?? null,
+          tipo: documento?.tipo ?? arquivado?.tipo ?? null,
           storage_path: storagePath ?? path,
           sha256,
           tamanho_bytes: bytes.byteLength,

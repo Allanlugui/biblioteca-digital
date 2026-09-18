@@ -60,6 +60,12 @@
 - [x] Ingest real validado (documento + agregada + arquivo no bucket)
 - [ ] Validar fluxo logado de ponta a ponta (magic link no e-mail do usuário)
 
+## Bloco A — Fundação (CONCLUÍDO no código)
+- [x] Documento estendido + normalizador único + testes
+- [x] Campos reais por provider (validados com busca real)
+- [x] Migration 0002 + inserts atualizados
+- [ ] Rodar `supabase/migrations/0002_documento_enriquecido.sql` no SQL Editor (usuário, OBRIGATÓRIO — sem ela, estante/progresso falham)
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README
