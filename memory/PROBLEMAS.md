@@ -161,3 +161,9 @@
 ### P27. Busca web real pendente de chave do Google — AGUARDANDO USUÁRIO
 - **Contexto:** provider implementado e testado com mocks; cota gratuita de 100 consultas/dia.
 - **Ação do usuário:** criar chave + CX (passo a passo no README) e definir `GOOGLE_SEARCH_API_KEY`/`GOOGLE_SEARCH_CX` no `.env.local` e na Vercel.
+
+## 18/09/2026 — Bloco K
+
+### P28. Ingest carrega o PDF inteiro em memória (limite 50MB) — LIMITAÇÃO DECLARADA
+- **Contexto:** upload ao Storage exige bytes (hash + upload); stream validado já impõe o teto.
+- **Mitigação:** `PROXY_MAX_SIZE_BYTES` configurável; arquivos acima do teto recusados com 413 antes do buffer.

@@ -102,6 +102,10 @@
 ## Bloco J — PWA + SEO (CONCLUÍDO e validado)
 - [x] Manifest, ícone, SW mínimo, robots, sitemap, OG, JSON-LD
 
+## Bloco K — Segurança + performance (CONCLUÍDO e validado)
+- [x] Auditoria (secrets, XSS, logs, CORS) sem críticos
+- [x] Headers globais + pdf.js sob demanda confirmado
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

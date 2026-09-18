@@ -363,3 +363,9 @@
 ### D64. PWA instalável sem offline de dados + SEO técnico
 - **Decisão:** `manifest.ts`, `icon.svg` (Next gera favicon/apple-touch), SW mínimo (network-first navegação com fallback /, cache-first estáticos, nunca /api nem cross-origin) + `SwRegister` só em produção; `robots.ts` (bloqueia /api, /auth, /estante), `sitemap.ts` (só rotas estáveis), metadataBase + OG/Twitter + theme-color + JSON-LD WebSite; títulos com template.
 - **Impacto:** artefatos validados com MIME correto; sem SW de PDFs externos (direitos/tamanho) nem sitemap massivo.
+
+## 18/09/2026 — Bloco K (Segurança + performance)
+
+### D65. Auditoria sem achados críticos + headers globais
+- **Decisão:** nenhum secret no cliente, XSS só no JSON-LD estático, logs sem PII, CORS same-origin; adicionados `nosniff`, `Referrer-Policy`, `SAMEORIGIN`, `Permissions-Policy` mínima em `next.config.ts`; pdf.js confirmado em chunk sob demanda (431KB); rate-limit em memória e ingest em buffer seguem como limitações declaradas (P7/P28).
+- **Impacto:** headers validados em dev; 70 testes; sem mudança de comportamento.
