@@ -111,8 +111,8 @@
 
 ## Drive como storage (CONCLUÍDO no código)
 - [x] Interface + drivers + `/bytes` + testes (88 no total)
-- [ ] Conta de serviço + pasta compartilhada + envs (usuário)
-- [ ] Validar upload/leitura no Drive real
+- [x] Conta de serviço + pasta compartilhada + envs (usuário)
+- [x] Validar upload/leitura no Drive real (local + produção)
 
 ## Bloco M — Auditoria final (CONCLUÍDO)
 - [x] lint, typecheck, 75 testes, build, E2E ponta a ponta, a11y, mobile, segurança

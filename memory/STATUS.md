@@ -5,6 +5,7 @@
 - **Pendente futuro:** busca web 100% universal exige API com chave (Brave/Google) — decisão do usuário; confirmar S2 real em produção (P24).
 - **Auth 500:** CAUSA RAIZ = credenciais SMTP do Gmail rejeitadas (535 BadCredentials no log). Correção no painel pelo usuário.
 - **Biblioteca interna:** Ler/Baixar universais com resolução interna (E2E real OK).
+- **Drive em produção:** validado (2.2MB servido do Drive em 3.3s via /bytes).
 - **Ultimo Progresso:** Commit `8287057` (feat: biblioteca digital — busca agregada, download e leitor PDF): typecheck, lint, 31 testes e build revalidados antes do commit; `.gitignore` corrigido (`.env.example` comittável, `.obsidian/` ignorado); 4 `.gitkeep` obsoletos removidos.
 
 ---
