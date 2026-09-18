@@ -369,3 +369,9 @@
 ### D65. Auditoria sem achados críticos + headers globais
 - **Decisão:** nenhum secret no cliente, XSS só no JSON-LD estático, logs sem PII, CORS same-origin; adicionados `nosniff`, `Referrer-Policy`, `SAMEORIGIN`, `Permissions-Policy` mínima em `next.config.ts`; pdf.js confirmado em chunk sob demanda (431KB); rate-limit em memória e ingest em buffer seguem como limitações declaradas (P7/P28).
 - **Impacto:** headers validados em dev; 70 testes; sem mudança de comportamento.
+
+## 18/09/2026 — Bloco L (Busca em linguagem natural)
+
+### D66. Interpretação determinística de período, sem IA
+- **Decisão:** `lib/linguagem-natural.ts` (depois de/desde/antes de/entre/últimos N anos/último ano) + aplicação na /busca só sem filtro explícito, com nota visível e "Desfazer".
+- **Impacto:** 75 testes; E2E real (nota + 31 resultados ≥2024, zero erros).

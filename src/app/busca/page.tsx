@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { FiltrosBusca } from "@/components/filtros-busca";
 import { SearchBar } from "@/components/search-bar";
 import { SearchResults } from "@/components/search-results";
 import { EmptyState } from "@/components/query-states";
+import { interpretarBusca } from "@/lib/linguagem-natural";
 import { buscaQuerySchema } from "@/schemas/busca";
 
 export const metadata: Metadata = { title: "Busca" };
@@ -31,11 +33,24 @@ export default async function BuscaPage({ searchParams }: PageProps<"/busca">) {
     );
   }
   const query = new URLSearchParams();
-  query.set("q", parsed.data.q);
+  // Bloco L: sem filtro explícito de período, tenta entender linguagem natural.
+  let notaPeriodo: string | undefined;
+  let anoDe = parsed.data.anoDe;
+  let anoAte = parsed.data.anoAte;
+  if (!anoDe && !anoAte) {
+    const interpretada = interpretarBusca(parsed.data.q);
+    if (interpretada.descricao && (interpretada.anoDe !== undefined || interpretada.anoAte !== undefined)) {
+      anoDe = interpretada.anoDe ? String(interpretada.anoDe) : undefined;
+      anoAte = interpretada.anoAte ? String(interpretada.anoAte) : undefined;
+      query.set("q", interpretada.consulta);
+      notaPeriodo = interpretada.descricao;
+    }
+  }
+  if (!query.has("q")) query.set("q", parsed.data.q);
   query.set("limite", String(parsed.data.limite ?? 20));
   query.set("pagina", String(parsed.data.pagina ?? 1));
-  if (parsed.data.anoDe) query.set("anoDe", parsed.data.anoDe);
-  if (parsed.data.anoAte) query.set("anoAte", parsed.data.anoAte);
+  if (anoDe) query.set("anoDe", anoDe);
+  if (anoAte) query.set("anoAte", anoAte);
   for (const f of parsed.data.fonte ?? []) query.append("fonte", f);
   if (parsed.data.tipo) query.set("tipo", parsed.data.tipo);
   if (parsed.data.soPdf) query.set("soPdf", "true");
@@ -44,7 +59,12 @@ export default async function BuscaPage({ searchParams }: PageProps<"/busca">) {
   return (
     <main id="conteudo" className="mx-auto w-full max-w-6xl flex-1 px-6 py-10 sm:py-14">
       <CabecalhoBusca consulta={consulta} />
-      <div className="mb-6"><FiltrosBusca valores={parsed.data} /></div>
+      <div className="mb-6"><FiltrosBusca valores={{ ...parsed.data, anoDe, anoAte }} /></div>
+      {notaPeriodo && (
+        <p role="status" className="mb-6 rounded-md border border-gilt-600/50 bg-gilt-100 px-4 py-3 text-sm text-gilt-700">
+          {notaPeriodo} <Link href={`/busca?q=${encodeURIComponent(parsed.data.q)}`} prefetch={false} className="font-semibold underline underline-offset-4">Desfazer</Link>
+        </p>
+      )}
       <SearchResults key={queryString} query={queryString} />
     </main>
   );
