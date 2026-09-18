@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const fonteSchema = z.enum(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar", "web"]);
+export const fonteSchema = z.enum(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar", "web", "gutenberg"]);
 
 export const documentoRespostaSchema = z.object({
   id: z.string(),

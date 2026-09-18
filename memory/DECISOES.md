@@ -405,6 +405,12 @@
 - **Decisão:** service account descartada para upload (403 sem cota); OAuth da conta do usuário via gcloud ADC + `X-Goog-User-Project`; legado supabase servido direto em qualquer modo.
 - **Impacto:** ingest real no Drive validado (2.2MB, `drive:*`, leitura via /bytes).
 
+## 18/09/2026 — Povoamento autônomo do acervo
+
+### D77. Ingestão por script com teto + acervo como 6ª fonte
+- **Decisão:** `scripts/ingerir/lote.mjs` (arXiv/DOAJ/Gutenberg, anti-SSRF, 20MB/arquivo, teto 350GB, checkpoint retomável, dedup SHA); ids `gutenberg_*` servidos pela linha do banco; provider `acervo` (ilike, ranqueado primeiro).
+- **Impacto:** 28 itens no primeiro ciclo (25 novos, 3 dup, 1 falha); busca e ficha validadas; 91 testes; build OK.
+
 ## 18/09/2026 — Só arquivos baixáveis por padrão
 
 ### D74. soPdf padrão via select explícito (sem checkbox ambíguo)

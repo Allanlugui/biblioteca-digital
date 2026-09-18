@@ -1,5 +1,6 @@
 import { config } from "@/lib/config";
 import type { Documento, FiltrosBusca, OrdemBusca, ResultadoBusca } from "@/types";
+import { acervoProvider } from "./acervo";
 import { arxivProvider } from "./arxiv";
 import { doajProvider } from "./doaj";
 import { normalizarArxivId } from "./normalizar";
@@ -9,11 +10,13 @@ import { webDisponivel, webProvider } from "./web";
 import type { SearchProvider, SearchProviderId } from "./types";
 
 const TODOS: SearchProvider[] = [
+  // O acervo local primeiro: instantâneo e com arquivo garantido.
+  acervoProvider,
   openalexProvider,
   arxivProvider,
   doajProvider,
   semanticScholarProvider,
-  // Busca universal só com chave configurada; sem ela, as 4 fontes abertas seguem.
+  // Busca universal só com chave configurada; sem ela, as demais seguem.
   ...(webDisponivel() ? [webProvider] : []),
 ];
 

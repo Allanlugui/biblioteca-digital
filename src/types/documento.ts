@@ -4,7 +4,8 @@ export type Fonte =
   | "doaj"
   | "google-books"
   | "semantic-scholar"
-  | "web";
+  | "web"
+  | "gutenberg";
 
 export type Documento = {
   id: string;

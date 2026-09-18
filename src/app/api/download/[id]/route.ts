@@ -45,6 +45,10 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/down
       headers,
     );
   }
+  // Caminho interno do acervo: redireciona para os bytes (download direto).
+  if (origemCrua.startsWith("/api/")) {
+    return Response.redirect(new URL(origemCrua, request.url), 302);
+  }
 
   let pdf;
   try {

@@ -114,6 +114,10 @@
 - [x] Conta de serviço + pasta compartilhada + envs (usuário)
 - [x] Validar upload/leitura no Drive real (local + produção)
 
+## Acervo povoado (ciclo 1: 28 itens)
+- [x] Script `scripts/ingerir/lote.mjs` + provider acervo
+- [ ] Agendar execução contínua (GitHub Action) para milhares de itens
+
 ## Bloco M — Auditoria final (CONCLUÍDO)
 - [x] lint, typecheck, 75 testes, build, E2E ponta a ponta, a11y, mobile, segurança
 
