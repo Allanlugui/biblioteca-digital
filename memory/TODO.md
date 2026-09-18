@@ -59,3 +59,9 @@
 - [x] Preencher `.env.local` + envs da Vercel com as chaves reais (usuário)
 - [x] Ingest real validado (documento + agregada + arquivo no bucket)
 - [ ] Validar fluxo logado de ponta a ponta (magic link no e-mail do usuário)
+
+## Fase 10 — Busca universal na web (CONCLUÍDA no código)
+- [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
+- [x] Registro condicional + 5 fontes no rodapé/home/README
+- [ ] Criar chave + CX do Google e configurar envs (usuário)
+- [ ] Validar busca web real em produção

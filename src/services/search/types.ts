@@ -1,6 +1,6 @@
 import type { Documento, Fonte } from "@/types";
 
-export type SearchProviderId = Extract<Fonte, "openalex" | "arxiv" | "doaj" | "semantic-scholar">;
+export type SearchProviderId = Extract<Fonte, "openalex" | "arxiv" | "doaj" | "semantic-scholar" | "web">;
 
 export interface SearchProvider {
   readonly fonte: SearchProviderId;

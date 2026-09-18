@@ -6,6 +6,7 @@ export const nomesFontes: Record<Fonte, string> = {
   doaj: "DOAJ",
   "google-books": "Google Books",
   "semantic-scholar": "Semantic Scholar",
+  web: "Web",
 };
 
 export function formatarData(valor: string | null): string {

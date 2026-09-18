@@ -1,7 +1,7 @@
 # Biblioteca Digital
 
-Busca agregada de documentos científicos (OpenAlex, arXiv, DOAJ, Semantic Scholar) com
-download direto de PDFs e leitor integrado no navegador.
+Busca agregada de documentos científicos (OpenAlex, arXiv, DOAJ, Semantic Scholar)
+mais os PDFs de toda a web, com download direto e leitor integrado no navegador.
 
 Stack: Next.js 16 (App Router) + React 19 + TypeScript + Tailwind CSS v4 +
 Zod + PDF.js (`pdfjs-dist`).
@@ -49,7 +49,7 @@ possuem fallback seguro — nenhum segredo é obrigatório para rodar localmente
 
 | Rota                     | Descrição                                              |
 | ------------------------ | ------------------------------------------------------ |
-| `GET /api/busca?q=&limite=` | Agregação OpenAlex + arXiv + DOAJ + Semantic Scholar (contrato `ApiResponse<ResultadoBusca>`) |
+| `GET /api/busca?q=&limite=` | Agregação OpenAlex + arXiv + DOAJ + Semantic Scholar + Web (contrato `ApiResponse<ResultadoBusca>`) |
 | `GET /api/documento/[id]` | Metadados (`id` no formato `fonte_externalId`)        |
 | `GET /api/download/[id]` | Stream do PDF (`attachment`, MIME + tamanho + magic bytes validados) |
 | `GET /api/proxy?url=`    | Proxy para o leitor (`inline`, com guard anti-SSRF: só https/443, IPs privados bloqueados, DNS verificado e conexão fixada no IP verificado) |
@@ -81,6 +81,15 @@ detectado automaticamente como Next.js). Defina as variáveis de ambiente
 acima no painel do projeto quando quiser valores diferentes do padrão.
 Para o painel do usuário, adicione também `NEXT_PUBLIC_SUPABASE_URL`,
 `NEXT_PUBLIC_SUPABASE_ANON_KEY` e `SUPABASE_SERVICE_ROLE_KEY`.
+
+## Busca universal na web (Google, opcional)
+
+As 4 fontes acadêmicas funcionam sem chave. Para varrer PDFs de toda a web,
+ative o Google Programmable Search (100 consultas/dia grátis):
+
+1. Em `console.cloud.google.com`: ative a Custom Search API e crie uma chave (`GOOGLE_SEARCH_API_KEY`).
+2. Em `programmablesearchengine.google.com`: crie um mecanismo com "Search the entire web" e copie o ID (`GOOGLE_SEARCH_CX`).
+3. Defina as duas envs (local + Vercel). Sem elas, a fonte Web fica ausente e o resto segue normal.
 
 Limitações conhecidas em produção (ver `memory/PROBLEMAS.md`):
 

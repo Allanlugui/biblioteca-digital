@@ -3,6 +3,7 @@ const FONTES = [
   { nome: "arXiv", url: "https://arxiv.org" },
   { nome: "DOAJ", url: "https://doaj.org" },
   { nome: "Semantic Scholar", url: "https://www.semanticscholar.org" },
+  { nome: "Web", url: "https://programmablesearchengine.google.com/about/" },
 ];
 
 export function SiteFooter() {

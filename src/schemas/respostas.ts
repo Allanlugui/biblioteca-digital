@@ -4,7 +4,7 @@ export const documentoRespostaSchema = z.object({
   id: z.string(),
   titulo: z.string(),
   autores: z.array(z.string()),
-  fonte: z.enum(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar"]),
+  fonte: z.enum(["openalex", "arxiv", "doaj", "google-books", "semantic-scholar", "web"]),
   urlPdf: z.string().nullable(),
   urlPagina: z.string().nullable(),
   descricao: z.string().nullable(),

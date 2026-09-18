@@ -20,13 +20,17 @@ const FONTES = [
     nome: "Semantic Scholar",
     descricao: "Base com centenas de milhões de artigos, incluindo editoras fora das demais fontes.",
   },
+  {
+    nome: "Busca na web",
+    descricao: "Varredura de PDFs em toda a web, além dos catálogos acadêmicos.",
+  },
 ];
 
 const PASSOS = [
   {
     numero: "I",
     titulo: "Consulte",
-    descricao: "Uma busca varre as quatro fontes em paralelo e reúne os resultados.",
+    descricao: "Uma busca varre as cinco fontes em paralelo e reúne os resultados.",
   },
   {
     numero: "II",
@@ -54,7 +58,7 @@ export default function Home() {
           </h1>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-parchment/80">
             Milhões de publicações do OpenAlex, arXiv, DOAJ e Semantic Scholar reunidas num só
-            catálogo — com download direto e leitura no navegador.
+            catálogo — mais os PDFs de toda a web, com download direto e leitura no navegador.
           </p>
           <div className="mt-10 max-w-3xl rounded-lg bg-vellum p-5 text-ink shadow-[0_18px_50px_rgba(0,0,0,0.35)] sm:p-6">
             <SearchBar grande />
@@ -78,11 +82,11 @@ export default function Home() {
       {/* O acervo */}
       <section aria-label="O acervo" className="mx-auto w-full max-w-6xl px-6 py-14">
         <div className="flex items-baseline justify-between gap-6">
-          <h2 className="font-display text-3xl tracking-tight">Quatro fontes, um só catálogo</h2>
+          <h2 className="font-display text-3xl tracking-tight">Cinco fontes, um só catálogo</h2>
           <span aria-hidden="true" className="hidden font-display text-3xl text-gilt-600 sm:block">❦</span>
         </div>
         <div className="rule-double mt-4" aria-hidden="true" />
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {FONTES.map((fonte) => (
             <article key={fonte.nome} className="rounded-md border border-rule bg-vellum p-6 shadow-[0_1px_0_rgba(34,26,16,0.06),0_10px_24px_rgba(34,26,16,0.06)]">
               <h3 className="font-display text-xl">{fonte.nome}</h3>

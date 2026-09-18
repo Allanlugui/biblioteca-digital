@@ -4,9 +4,17 @@ import { arxivProvider } from "./arxiv";
 import { doajProvider } from "./doaj";
 import { openalexProvider } from "./openalex";
 import { semanticScholarProvider } from "./semanticscholar";
+import { webDisponivel, webProvider } from "./web";
 import type { SearchProvider } from "./types";
 
-const providers: SearchProvider[] = [openalexProvider, arxivProvider, doajProvider, semanticScholarProvider];
+const providers: SearchProvider[] = [
+  openalexProvider,
+  arxivProvider,
+  doajProvider,
+  semanticScholarProvider,
+  // Busca universal só com chave configurada; sem ela, as 4 fontes abertas seguem.
+  ...(webDisponivel() ? [webProvider] : []),
+];
 
 type EntradaCache = {
   expiraEm: number;

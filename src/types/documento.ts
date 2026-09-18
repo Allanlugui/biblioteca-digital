@@ -3,7 +3,8 @@ export type Fonte =
   | "arxiv"
   | "doaj"
   | "google-books"
-  | "semantic-scholar";
+  | "semantic-scholar"
+  | "web";
 
 export type Documento = {
   id: string;

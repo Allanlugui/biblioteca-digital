@@ -157,3 +157,7 @@
 - **Sintoma:** com o Tierkreis já no Storage, a rota devolveu 404 porque o arXiv falhou na hora (timeout frio).
 - **Causa:** `buscarDocumentoPorId` rodava antes de checar o acervo; fonte fora = 404 mesmo com arquivo guardado.
 - **Resolução:** a rota primeiro serve do acervo; só consulta a fonte quando a linha não existe ou não tem `url_origem`. Validado: 200 em 3.8s servindo do Storage.
+
+### P27. Busca web real pendente de chave do Google — AGUARDANDO USUÁRIO
+- **Contexto:** provider implementado e testado com mocks; cota gratuita de 100 consultas/dia.
+- **Ação do usuário:** criar chave + CX (passo a passo no README) e definir `GOOGLE_SEARCH_API_KEY`/`GOOGLE_SEARCH_CX` no `.env.local` e na Vercel.

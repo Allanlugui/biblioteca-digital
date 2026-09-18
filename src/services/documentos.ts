@@ -3,16 +3,21 @@ import { arxivProvider } from "./search/arxiv";
 import { doajProvider } from "./search/doaj";
 import { openalexProvider } from "./search/openalex";
 import { semanticScholarProvider } from "./search/semanticscholar";
+import { webDisponivel, webProvider } from "./search/web";
 import type { SearchProvider, SearchProviderId } from "./search/types";
 
-const providers: Record<SearchProviderId, SearchProvider> = {
+const baseProviders = {
   openalex: openalexProvider,
   arxiv: arxivProvider,
   doaj: doajProvider,
   "semantic-scholar": semanticScholarProvider,
 };
 
-const ID_DOCUMENTO = /^(openalex|arxiv|doaj|semantic-scholar)_(.+)$/;
+const providers = (
+  webDisponivel() ? { ...baseProviders, web: webProvider } : baseProviders
+) as Record<SearchProviderId, SearchProvider>;
+
+const ID_DOCUMENTO = /^(openalex|arxiv|doaj|semantic-scholar|web)_(.+)$/;
 
 export async function buscarDocumentoPorId(id: string): Promise<Documento | null> {
   const match = ID_DOCUMENTO.exec(id);

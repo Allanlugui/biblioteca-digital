@@ -8,6 +8,8 @@ export type ServerConfig = {
   searchCacheTtlMs: number;
   openalexMailto: string;
   semanticScholarApiKey: string;
+  googleSearchApiKey: string;
+  googleSearchCx: string;
 };
 
 function readPositiveInt(name: string, fallback: number): number {
@@ -36,4 +38,6 @@ export const config: ServerConfig = {
   searchCacheTtlMs: readPositiveInt("SEARCH_CACHE_TTL_MS", 300_000),
   openalexMailto: process.env.OPENALEX_MAILTO?.trim() ?? "",
   semanticScholarApiKey: process.env.SEMANTIC_SCHOLAR_API_KEY?.trim() ?? "",
+  googleSearchApiKey: process.env.GOOGLE_SEARCH_API_KEY?.trim() ?? "",
+  googleSearchCx: process.env.GOOGLE_SEARCH_CX?.trim() ?? "",
 };
