@@ -49,3 +49,46 @@ body {
   background-image: radial-gradient(rgba(34, 26, 16, 0.055) 1px, transparent 1px);
   background-size: 22px 22px;
 }
+
+/* Leitor em livro: a página desliza para dentro conforme a direção da navegação. */
+.book-stage {
+  perspective: 1200px;
+  overflow: hidden;
+}
+
+@keyframes page-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(56px) rotateY(-5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0);
+  }
+}
+
+@keyframes page-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-56px) rotateY(5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) rotateY(0);
+  }
+}
+
+.animate-page-from-right {
+  animation: page-from-right 280ms ease-out;
+}
+
+.animate-page-from-left {
+  animation: page-from-left 280ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-page-from-right,
+  .animate-page-from-left {
+    animation: none;
+  }
+}

@@ -1,46 +1,45 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { GlobalWorkerOptions, getDocument } from "pdfjs-dist";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { GlobalWorkerOptions, getDocument, type PDFDocumentProxy } from "pdfjs-dist";
 
 GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
+const MAX_PAGINAS = 20;
+const ESCALA = 1.5;
+
+type EstadoLeitor = "loading" | "ready" | "error";
+
 export function PdfViewer({ urlPdf }: { urlPdf: string }) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [estado, setEstado] = useState<"loading" | "ready" | "error">("loading");
+  const palcoRef = useRef<HTMLDivElement | null>(null);
+  const docRef = useRef<PDFDocumentProxy | null>(null);
+  const cacheRef = useRef(new Map<number, HTMLCanvasElement>());
+  const rendersRef = useRef<{ cancel: () => void }[]>([]);
+  const paginaRef = useRef(1);
+  const toqueXRef = useRef<number | null>(null);
+
+  const [estado, setEstado] = useState<EstadoLeitor>("loading");
   const [mensagem, setMensagem] = useState("");
+  const [total, setTotal] = useState(0);
+  const [pagina, setPagina] = useState(1);
+  const [direcao, setDirecao] = useState<1 | -1>(1);
 
+  // Carrega o documento (uma vez por URL).
   useEffect(() => {
-    const canvasAtual = containerRef.current;
-    if (!canvasAtual) return;
     let cancelado = false;
-    const renderTasks: { cancel: () => void }[] = [];
-    const tasks: { destroy: () => Promise<void> }[] = [];
-
+    const cache = cacheRef.current;
+    const tarefa = getDocument({ url: `/api/proxy?url=${encodeURIComponent(urlPdf)}`, withCredentials: false });
     (async () => {
       try {
-        const proxied = `/api/proxy?url=${encodeURIComponent(urlPdf)}`;
-        const task = getDocument({ url: proxied, withCredentials: false });
-        tasks.push(task);
-        const doc = await task.promise;
+        const doc = await tarefa.promise;
         if (cancelado) return;
-        for (let num = 1; num <= Math.min(doc.numPages, 20); num++) {
-          if (cancelado) return;
-          const page = await doc.getPage(num);
-          const viewport = page.getViewport({ scale: 1.5 });
-          const canvas = document.createElement("canvas");
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          canvas.className = "mx-auto block max-w-full rounded-lg shadow";
-          const ctx = canvas.getContext("2d");
-          if (!ctx) continue;
-          const taskRender = page.render({ canvasContext: ctx, canvas, viewport });
-          renderTasks.push(taskRender);
-          await taskRender.promise;
-          if (cancelado) return;
-          canvasAtual.appendChild(canvas);
-        }
-        if (!cancelado) setEstado("ready");
+        docRef.current = doc;
+        cache.clear();
+        paginaRef.current = 1;
+        setTotal(Math.min(doc.numPages, MAX_PAGINAS));
+        setPagina(1);
+        setDirecao(1);
+        setEstado("ready");
       } catch (error) {
         if (!cancelado) {
           setEstado("error");
@@ -48,14 +47,87 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
         }
       }
     })();
-
     return () => {
       cancelado = true;
-      renderTasks.forEach((t) => t.cancel());
-      tasks.forEach((t) => void t.destroy().catch(() => undefined));
-      if (canvasAtual) canvasAtual.textContent = "";
+      rendersRef.current.forEach((render) => render.cancel());
+      rendersRef.current = [];
+      void tarefa.destroy().catch(() => undefined);
+      docRef.current = null;
+      cache.clear();
     };
   }, [urlPdf]);
+
+  const obterCanvas = useCallback(async (numero: number, cancelado: () => boolean) => {
+    const emCache = cacheRef.current.get(numero);
+    if (emCache) return emCache;
+    const doc = docRef.current;
+    if (!doc) return null;
+    const page = await doc.getPage(numero);
+    if (cancelado()) return null;
+    const viewport = page.getViewport({ scale: ESCALA });
+    const canvas = document.createElement("canvas");
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx || cancelado()) return null;
+    const render = page.render({ canvasContext: ctx, canvas, viewport });
+    rendersRef.current.push(render);
+    try {
+      await render.promise;
+    } finally {
+      rendersRef.current = rendersRef.current.filter((item) => item !== render);
+    }
+    if (cancelado()) return null;
+    cacheRef.current.set(numero, canvas);
+    return canvas;
+  }, []);
+
+  // Exibe a página atual no palco, deslizando conforme a direção.
+  useEffect(() => {
+    if (estado !== "ready" || total === 0) return;
+    const palco = palcoRef.current;
+    if (!palco) return;
+    let cancelado = false;
+    const foiCancelado = () => cancelado;
+    (async () => {
+      const canvas = await obterCanvas(pagina, foiCancelado);
+      if (cancelado || !canvas) return;
+      palco.textContent = "";
+      const classe = direcao === 1 ? "animate-page-from-right" : "animate-page-from-left";
+      canvas.classList.remove("animate-page-from-right", "animate-page-from-left");
+      // Reforça o reflow para a animação repetir ao revisitar a página.
+      void canvas.offsetWidth;
+      canvas.className = `mx-auto block max-w-full bg-white shadow-[0_10px_30px_rgba(34,26,16,0.25)] ${classe}`;
+      palco.appendChild(canvas);
+      // Pré-renderiza as vizinhas para a virada ser instantânea.
+      if (pagina < total) void obterCanvas(pagina + 1, foiCancelado).catch(() => undefined);
+      if (pagina > 1) void obterCanvas(pagina - 1, foiCancelado).catch(() => undefined);
+    })().catch(() => undefined);
+    return () => {
+      cancelado = true;
+    };
+  }, [estado, pagina, direcao, total, obterCanvas]);
+
+  const irPara = useCallback(
+    (alvo: number) => {
+      if (estado !== "ready" || total === 0) return;
+      const destino = Math.min(Math.max(alvo, 1), total);
+      setDirecao(destino >= paginaRef.current ? 1 : -1);
+      paginaRef.current = destino;
+      setPagina(destino);
+    },
+    [estado, total],
+  );
+
+  // Setas do teclado folheiam o livro.
+  useEffect(() => {
+    const aoTeclar = (evento: KeyboardEvent) => {
+      if (evento.key === "ArrowRight") irPara(paginaRef.current + 1);
+      if (evento.key === "ArrowLeft") irPara(paginaRef.current - 1);
+    };
+    window.addEventListener("keydown", aoTeclar);
+    return () => window.removeEventListener("keydown", aoTeclar);
+  }, [irPara]);
 
   if (estado === "error") {
     return (
@@ -65,13 +137,81 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
     );
   }
 
+  if (estado === "loading") {
+    return (
+      <section aria-label="Leitor de PDF" className="mt-6">
+        <div role="status" className="rounded-md border border-rule bg-parchment p-8">
+          <p className="font-display text-xl">Abrindo o livro…</p>
+          <p className="mt-2 text-sm italic text-ink-soft">Buscando as páginas na fonte.</p>
+          <div aria-hidden="true" className="mt-6 motion-safe:animate-pulse">
+            <div className="mx-auto aspect-[3/4] max-w-sm rounded-sm bg-rule" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section aria-label="Leitor de PDF" className="mt-6">
-      <p className="mb-3 text-sm italic text-ink-soft">
-        Pré-visualização das primeiras páginas (máximo 20).{" "}
-        {estado === "loading" && <span aria-live="polite">Carregando…</span>}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-t-md border border-rule border-b-0 bg-library-950 px-4 py-3 text-parchment">
+        <button
+          onClick={() => irPara(pagina - 1)}
+          disabled={pagina <= 1}
+          aria-label="Página anterior"
+          className="rounded px-3 py-2 text-sm font-semibold hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-gilt-400 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <span aria-hidden="true">←</span> Anterior
+        </button>
+        <p aria-live="polite" className="font-display text-lg tracking-wide">
+          Página {pagina} de {total}
+        </p>
+        <button
+          onClick={() => irPara(pagina + 1)}
+          disabled={pagina >= total}
+          aria-label="Próxima página"
+          className="rounded px-3 py-2 text-sm font-semibold hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-gilt-400 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          Próxima <span aria-hidden="true">→</span>
+        </button>
+      </div>
+      <div
+        ref={palcoRef}
+        role="region"
+        aria-label={`Página ${pagina} de ${total}`}
+        className="book-stage min-h-96 rounded-b-md border border-rule border-t-0 bg-parchment p-4 shadow-[inset_14px_0_28px_rgba(34,26,16,0.10)] sm:p-8"
+        onTouchStart={(evento) => {
+          toqueXRef.current = evento.touches[0]?.clientX ?? null;
+        }}
+        onTouchEnd={(evento) => {
+          const inicio = toqueXRef.current;
+          const fim = evento.changedTouches[0]?.clientX;
+          toqueXRef.current = null;
+          if (inicio === null || fim === undefined) return;
+          const delta = fim - inicio;
+          if (delta < -40) irPara(paginaRef.current + 1);
+          if (delta > 40) irPara(paginaRef.current - 1);
+        }}
+      />
+      <div className="mt-4 flex items-center gap-4">
+        <label htmlFor="ir-para-pagina" className="text-sm font-semibold text-ink-soft">
+          Ir para a página
+        </label>
+        <input
+          id="ir-para-pagina"
+          type="range"
+          min={1}
+          max={total}
+          value={pagina}
+          onChange={(evento) => irPara(Number(evento.target.value))}
+          aria-label="Ir para a página"
+          className="w-full max-w-xs accent-[#184636]"
+        />
+      </div>
+      <p className="mt-3 text-sm italic text-ink-soft">
+        {total >= MAX_PAGINAS
+          ? `Pré-visualização das ${MAX_PAGINAS} primeiras páginas. Use as setas do teclado ou deslize o dedo para folhear.`
+          : "Use as setas do teclado ou deslize o dedo para folhear."}
       </p>
-      <div ref={containerRef} className="space-y-4 rounded-md border border-rule bg-parchment p-4 sm:p-6" />
     </section>
   );
 }

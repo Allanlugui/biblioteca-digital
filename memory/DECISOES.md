@@ -242,3 +242,14 @@
 - **Decisão:** paleta única clara e quente (pergaminho `#f5f0e3`, velino, tinta marrom, verde `#123528`, dourado), serifada Fraunces para títulos + Inter para texto, header/footer verde-escuro com filete dourado; **sem** modo escuro automático (era a origem do visual "preto" reclamado).
 - **Motivo:** aspecto de biblioteca clássica que transmite autoridade; um tema único evita inconsistências de contraste.
 - **Impacto:** só apresentação — 12 arquivos em `app/` + `components/`; API, serviços e contratos intactos; validado com screenshots reais (home + busca com 20 docs, zero erros de página).
+
+## 18/09/2026 — Fase 7 (Leitor-livro + pt-BR total)
+
+### D44. Leitor paginado com deslizamento direcional
+- **Decisão:** `PdfViewer` virou livro: uma página por vez em palco com perspectiva, animação de deslizamento conforme a direção (280ms, respeita `prefers-reduced-motion`), cache de canvas + pré-render de vizinhas, barra com anterior/próxima, indicador `Página X de N` com `aria-live`, slider de salto, setas do teclado e swipe no touch. Limite de 20 páginas mantido.
+- **Motivo:** leitura por scroll contínuo não tinha aspecto de livro; folhear página a página com transição dá a sensação pedida.
+- **Impacto:** contrato `PdfViewer({urlPdf})` preservado; validado com E2E real (Tierkreis, "Página 2 de 10", screenshot, zero erros).
+
+### D45. Auditoria pt-BR + página 404 temática
+- **Decisão:** varredura de strings visíveis em inglês — só havia código interno (nomes de componentes) e a 404 padrão do Next em inglês; criado `not-found.tsx` ("Esta página saiu da estante").
+- **Impacto:** todo texto visível em pt-BR; `lang="pt-BR"` já existia.
