@@ -109,6 +109,14 @@
 ## Bloco L — Busca inteligente (CONCLUÍDO e validado)
 - [x] Período em linguagem natural + nota com desfazer
 
+## Bloco M — Auditoria final (CONCLUÍDO)
+- [x] lint, typecheck, 75 testes, build, E2E ponta a ponta, a11y, mobile, segurança
+
+## Pendências do usuário (fora do código)
+- [ ] Migrations 0002 + 0003 no SQL Editor
+- [ ] Envs Supabase (+ Google/S2 quando quiser) na Vercel
+- [ ] Teste do magic link em produção
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

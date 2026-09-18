@@ -375,3 +375,8 @@
 ### D66. Interpretação determinística de período, sem IA
 - **Decisão:** `lib/linguagem-natural.ts` (depois de/desde/antes de/entre/últimos N anos/último ano) + aplicação na /busca só sem filtro explícito, com nota visível e "Desfazer".
 - **Impacto:** 75 testes; E2E real (nota + 31 resultados ≥2024, zero erros).
+
+## 18/09/2026 — Bloco M (Auditoria final)
+
+### D67. Veredito: sem regressões nem críticos
+- **Evidência:** typecheck, lint, 75 testes, build exit 0; E2E ponta a ponta (home→busca→filtro→ficha→citação→login→leitor) zero erros; a11y automatizada limpa (1 falso positivo: input hidden sem label); overflow-x 0 nas 4 telas em 390px; segredos só no `.env.local` gitignored; headers de segurança ativos.
