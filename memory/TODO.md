@@ -116,7 +116,8 @@
 - [ ] Migrations 0002 + 0003 no SQL Editor
 - [ ] Envs Supabase (+ Google/S2 quando quiser) na Vercel
 - [ ] Verificar SMTP e Redirect URLs no dashboard Supabase Auth (diagnóstico P29)
-- [ ] Teste do magic link em produção
+- [ ] Verificar trigger `ao_criar_usuario_criar_perfil` + logs do Auth no timestamp (P30)
+- [ ] Testar em produção: criar conta, login, senha errada, logout, recuperação, magic link
 
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)

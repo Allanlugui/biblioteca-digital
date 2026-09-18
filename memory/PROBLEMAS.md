@@ -174,3 +174,10 @@
 - **Evidência:** o 500 vem da API do próprio Supabase (`supabase.co/auth/v1/otp`), antes de qualquer rota nossa; código auditado e correto (`entrar/page.tsx:20`, callback `/auth/callback` confere); parâmetros inválidos gerariam 400/422, não 500.
 - **Ação:** verificar SMTP/logs no dashboard Auth (passo a passo entregue); sem acesso aos logs internos — limitação declarada.
 - **Status:** AGUARDANDO verificação no painel.
+
+### P30. Diagnóstico definitivo 500 no OTP — trigger própria virou hipótese principal
+- **Achado novo:** nossa migration instala trigger AFTER INSERT em `auth.users`; `signInWithOtp` cria o usuário de forma síncrona, então a trigger dispara dentro do request — exceção nela gera 500.
+- **Não confirmado:** função parece correta estaticamente; sem acesso aos logs internos.
+- **Hipóteses:** H3/H4 PROVÁVEL (trigger/constraint), H1 PROVÁVEL (SMTP), H2 INCONCLUSIVA, H5 DESCARTADA como 500, H6 DESCARTADA.
+- **Timestamps:** 15:36 local (UTC-3) = 12:36 UTC — mesmo incidente.
+- **Nada alterado:** sem código, migration, banco ou deploy (commit propositalmente pendente).

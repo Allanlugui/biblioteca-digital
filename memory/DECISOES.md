@@ -376,10 +376,21 @@
 - **Decisão:** `lib/linguagem-natural.ts` (depois de/desde/antes de/entre/últimos N anos/último ano) + aplicação na /busca só sem filtro explícito, com nota visível e "Desfazer".
 - **Impacto:** 75 testes; E2E real (nota + 31 resultados ≥2024, zero erros).
 
+## 18/09/2026 — Auth e-mail + senha (pós-diagnóstico)
+
+### D70. Login principal com senha; magic link secundário
+- **Decisão:** `/entrar` com abas Entrar/Criar conta (signInWithPassword/signUp, nome em user_metadata — sem coluna nova, sem senha em `perfis`), `/recuperar` + `/redefinir` (resetPasswordForEmail → callback?next=/redefinir → updateUser), magic link em `<details>`; trigger inalterada (compatível com signUp); mensagens de erro mapeadas sem vazar detalhes.
+- **Impacto:** 79 testes; E2E de UI (validação local, telas, zero erros); fluxos com inbox ficam com o usuário.
+
 ## 18/09/2026 — Diagnóstico magic link (sem código alterado)
 
 ### D68. 500 no /auth/v1/otp atribuído ao provedor de e-mail, não ao código
 - **Decisão:** não alterar código; auditoria completa (login, clients, callback, proxy, envs) sem achados; correção esperada no painel Supabase (SMTP + Redirect URLs).
+
+## 18/09/2026 — Diagnóstico definitivo (sem alterações)
+
+### D69. Trigger própria como hipótese principal do 500; commit retido
+- **Decisão:** `signInWithOtp` cria o usuário de forma síncrona, então nossa trigger AFTER INSERT em `auth.users` dispara dentro do request — exceção nela gera exatamente esse 500. Memória atualizada sem commit para não disparar deploy na Vercel.
 
 ## 18/09/2026 — Bloco M (Auditoria final)
 

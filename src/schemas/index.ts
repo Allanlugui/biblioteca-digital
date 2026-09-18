@@ -1,3 +1,4 @@
+export * from "./auth";
 export * from "./busca";
 export * from "./colecao";
 export * from "./documento";
