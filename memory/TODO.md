@@ -83,6 +83,12 @@
 - [x] Zoom 50–250%, busca no texto, tela cheia
 - [x] Limitação: sem highlight das ocorrências no canvas
 
+## Bloco F — Minha Biblioteca (CONCLUÍDO no código)
+- [x] Coleções: migration, APIs, painel, página, guardar na ficha
+- [x] Favoritos = salvos da estante; histórico = buscas recentes
+- [ ] Rodar `supabase/migrations/0002_documento_enriquecido.sql` e `0003_colecoes.sql` (usuário)
+- [ ] Testar fluxo logado das coleções em produção
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

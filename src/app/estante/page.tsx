@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { BotaoRemover } from "@/components/botao-remover";
+import { ColecoesManager } from "@/components/colecoes-manager";
 import { formatarData, nomesFontes } from "@/lib/apresentacao";
 import { criarClienteServidor, supabaseLeituraConfigurado } from "@/lib/supabase/servidor";
 import type { Fonte } from "@/types";
@@ -99,6 +100,13 @@ export default async function EstantePage() {
             })}
           </ul>
         )}
+      </section>
+
+      <section aria-label="Coleções" className="mt-12">
+        <h2 className="font-display text-2xl">Coleções</h2>
+        <div className="rule-double mt-3" aria-hidden="true" />
+        <p className="mt-4 text-sm leading-6 text-ink-soft">Pastas temáticas para organizar a estante. Favoritos ficam em “Salvos” acima.</p>
+        <ColecoesManager />
       </section>
 
       <section aria-label="Documentos salvos" className="mt-12">

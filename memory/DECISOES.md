@@ -326,6 +326,12 @@
 - **Decisão:** zoom 50–250% (cache por página@escala, botão % reseta), busca textual via `getTextContent` com navegação entre ocorrências (sem highlight no canvas — limitação declarada), tela cheia com Fullscreen API + CSS `:fullscreen`, setas do teclado ignoradas em inputs.
 - **Impacto:** contrato `PdfViewer` estendido de forma retrocompatível; E2E real (zoom 125%, 8 ocorrências, fullscreen, zero erros).
 
+## 18/09/2026 — Bloco F (Coleções)
+
+### D60. Coleções como pastas da estante; estante = favoritos
+- **Decisão:** tabelas `colecoes` + `colecao_itens` (RLS por dono, itens via EXISTS); APIs CRUD + toggle por item; UI: seção na estante, página da coleção, "Guardar em coleção" na ficha. "Salvos" da estante equivalem a Favoritos (sem flag duplicada); histórico = buscas recentes (já existia).
+- **Impacto:** migration `0003_colecoes.sql`; 63 testes; fluxo logado pendente de teste com sessão real.
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário

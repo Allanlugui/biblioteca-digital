@@ -7,6 +7,7 @@ import { ErrorState, LoadingState } from "./query-states";
 import { useApi } from "./use-api";
 import { formatarData, linkExternoSeguro, nomesFontes } from "@/lib/apresentacao";
 import { DownloadButton } from "./download-button";
+import { GuardarEmColecao } from "./guardar-em-colecao";
 import { SaveButton } from "./save-button";
 
 const PdfViewer = dynamic(
@@ -181,6 +182,9 @@ export function DocumentoClient({ id }: { id: string }) {
               {urlPdfExterno && <a href={urlPdfExterno} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">Abrir PDF na origem<span className="sr-only"> (abre em nova aba)</span></a>}
             </div>
           )}
+          <div className="mt-4 max-w-xl">
+            <GuardarEmColecao documentoId={documento.id} />
+          </div>
           {!documento.urlPdf && (
             <div className="mt-4"><SaveButton id={documento.id} /></div>
           )}
