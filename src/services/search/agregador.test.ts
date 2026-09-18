@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deduplicar, normalizarTitulo, ordenar } from "@/services/search/agregador";
+import { aplicarFiltros, deduplicar, normalizarTitulo, ordenar, ordenarPor } from "@/services/search/agregador";
 import type { Documento } from "@/types";
 
 function doc(parcial: Partial<Documento> & { id: string; titulo: string }): Documento {
@@ -68,5 +68,35 @@ describe("ordenar", () => {
       "b",
       "a",
     ]);
+  });
+});
+
+describe("aplicarFiltros", () => {
+  const docs = [
+    doc({ id: "a", titulo: "Antigo com PDF", urlPdf: "https://a/x.pdf", dataPublicacao: "2019-05-01", tipo: "article" }),
+    doc({ id: "b", titulo: "Novo sem PDF", dataPublicacao: "2024-01-15", tipo: "preprint" }),
+    doc({ id: "c", titulo: "Sem data com PDF", urlPdf: "https://a/y.pdf", tipo: "article" }),
+  ];
+
+  it("filtra por PDF, tipo e período", () => {
+    expect(aplicarFiltros(docs, { soPdf: true }).map((d) => d.id)).toEqual(["a", "c"]);
+    expect(aplicarFiltros(docs, { tipo: "preprint" }).map((d) => d.id)).toEqual(["b"]);
+    expect(aplicarFiltros(docs, { anoDe: 2020 }).map((d) => d.id)).toEqual(["b"]);
+    expect(aplicarFiltros(docs, { anoAte: 2020 }).map((d) => d.id)).toEqual(["a"]);
+    expect(aplicarFiltros(docs, { soPdf: true, tipo: "article", anoDe: 2018, anoAte: 2020 }).map((d) => d.id)).toEqual(["a"]);
+  });
+});
+
+describe("ordenarPor", () => {
+  const docs = [
+    doc({ id: "a", titulo: "Antigo citado", dataPublicacao: "2019-01-01", citacoes: 500 }),
+    doc({ id: "b", titulo: "Novo pouco citado", dataPublicacao: "2024-06-01", citacoes: 3 }),
+    doc({ id: "c", titulo: "Sem dados" }),
+  ];
+
+  it("ordena por recentes e citados, nulos por último", () => {
+    expect(ordenarPor(docs, "q", "recentes").map((d) => d.id)).toEqual(["b", "a", "c"]);
+    expect(ordenarPor(docs, "q", "citados").map((d) => d.id)).toEqual(["a", "b", "c"]);
+    expect(ordenarPor(docs, "q", "relevancia")).toEqual(ordenar(docs, "q"));
   });
 });

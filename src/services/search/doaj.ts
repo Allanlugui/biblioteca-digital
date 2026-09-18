@@ -119,8 +119,11 @@ function mapear(artigo: Artigo): Documento | null {
 export const doajProvider: SearchProvider = {
   fonte: "doaj",
 
-  async buscar(termo: string, limite: number, signal?: AbortSignal): Promise<Documento[]> {
-    const url = `${BASE}/${encodeURIComponent(escaparLucene(termo))}?page=1&pageSize=${limite}`;
+  async buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: { inicio?: number }): Promise<Documento[]> {
+    const porPagina = Math.min(Math.max(limite, 1), 100);
+    const inicio = Math.max(opcoes?.inicio ?? 0, 0);
+    const pagina = Math.floor(inicio / porPagina) + 1;
+    const url = `${BASE}/${encodeURIComponent(escaparLucene(termo))}?page=${pagina}&pageSize=${porPagina}`;
     const texto = await fetchTexto(url, "doaj", signal);
     const parsed = respostaBuscaSchema.safeParse(JSON.parse(texto));
     if (!parsed.success) {

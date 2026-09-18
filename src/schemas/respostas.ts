@@ -21,4 +21,9 @@ export const buscaRespostaSchema = z.object({
   consulta: z.string(),
   total: z.number().int().nonnegative(),
   documentos: z.array(documentoRespostaSchema),
+  pagina: z.number().int().min(1),
+  porPagina: z.number().int().min(1),
+  temMais: z.boolean(),
+  fontesConsultadas: z.array(z.string()),
+  fontesIndisponiveis: z.array(z.string()),
 });

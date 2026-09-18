@@ -27,6 +27,34 @@ describe("buscaQuerySchema", () => {
     expect(buscaQuerySchema.safeParse({ q: "quantum", limite: "51" }).success).toBe(false);
     expect(buscaQuerySchema.safeParse({ q: "quantum", limite: "abc" }).success).toBe(false);
   });
+
+  it("aceita filtros válidos e aplica padrões ausentes", () => {
+    const parsed = buscaQuerySchema.safeParse({
+      q: "quantum",
+      pagina: "2",
+      anoDe: "2020",
+      anoAte: "2024",
+      fonte: ["openalex", "arxiv"],
+      tipo: "article",
+      soPdf: "true",
+      ordem: "citados",
+    });
+    expect(parsed.success).toBe(true);
+    if (parsed.success) {
+      expect(parsed.data.pagina).toBe(2);
+      expect(parsed.data.fonte).toEqual(["openalex", "arxiv"]);
+      expect(parsed.data.soPdf).toBe(true);
+    }
+    expect(buscaQuerySchema.safeParse({ q: "quantum" }).success).toBe(true);
+  });
+
+  it("rejeita filtros inválidos", () => {
+    expect(buscaQuerySchema.safeParse({ q: "quantum", pagina: "0" }).success).toBe(false);
+    expect(buscaQuerySchema.safeParse({ q: "quantum", anoDe: "20" }).success).toBe(false);
+    expect(buscaQuerySchema.safeParse({ q: "quantum", anoDe: "2024", anoAte: "2020" }).success).toBe(false);
+    expect(buscaQuerySchema.safeParse({ q: "quantum", fonte: "inexistente" }).success).toBe(false);
+    expect(buscaQuerySchema.safeParse({ q: "quantum", ordem: "alfabetica" }).success).toBe(false);
+  });
 });
 
 describe("documentoIdSchema", () => {

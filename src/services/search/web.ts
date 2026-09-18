@@ -93,13 +93,15 @@ async function persistir(documentos: Documento[]): Promise<void> {
 export const webProvider: SearchProvider = {
   fonte: "web",
 
-  async buscar(termo: string, limite: number, signal?: AbortSignal): Promise<Documento[]> {
+  async buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: { inicio?: number }): Promise<Documento[]> {
     if (!webDisponivel()) return [];
     const numero = Math.min(Math.max(limite, 1), 10);
+    // A API cobre até ~100 resultados (start 1-based).
+    const inicio = Math.min(Math.max(opcoes?.inicio ?? 0, 0), 90);
     const url =
       `${BASE}?key=${encodeURIComponent(config.googleSearchApiKey)}` +
       `&cx=${encodeURIComponent(config.googleSearchCx)}` +
-      `&q=${encodeURIComponent(`${termo} filetype:pdf`)}&num=${numero}`;
+      `&q=${encodeURIComponent(`${termo} filetype:pdf`)}&num=${numero}&start=${inicio + 1}`;
     let texto: string;
     try {
       texto = await fetchTexto(url, "web", signal);

@@ -301,6 +301,12 @@
 - **Contexto:** `referencias` adiado (exigiria chamadas extras por obra); `idioma`/`tipo` literais do arXiv/DOAJ/S2 são factuais da fonte, não inferência.
 - **Impacto:** migration `0002_documento_enriquecido.sql` (colunas anuláveis); inserts atualizados; 51 testes; UI intacta.
 
+## 18/09/2026 — Bloco B (Busca avançada)
+
+### D56. Filtros pós-agregação + offset repassado às fontes
+- **Decisão:** `anoDe/anoAte/tipo/soPdf` filtram após dedup (uniforme entre fontes, que têm capacidades distintas); `fonte` restringe providers antes da chamada (economiza quota); `ordem` (relevância/recentes/citados) pós-ordena com nulos por último; paginação com `pagina`/`limite`, buscando `pagina*limite+20` (teto 100/fonte); resposta com `total` pós-filtros, `temMais` e `fontesIndisponiveis` (exibidas na UI).
+- **Impacto:** interface `buscar` ganhou `opcoes.inicio` (dialeto por fonte); `voltar` substitui `de` preservando filtros; 55 testes.
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário

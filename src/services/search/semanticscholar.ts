@@ -88,8 +88,10 @@ function cabecalhos(): Record<string, string> | undefined {
 export const semanticScholarProvider: SearchProvider = {
   fonte: "semantic-scholar",
 
-  async buscar(termo: string, limite: number, signal?: AbortSignal): Promise<Documento[]> {
-    const url = `${BASE}/paper/search?query=${encodeURIComponent(termo)}&limit=${Math.min(Math.max(limite, 1), 100)}&fields=${CAMPOS}`;
+  async buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: { inicio?: number }): Promise<Documento[]> {
+    const porPagina = Math.min(Math.max(limite, 1), 100);
+    const inicio = Math.max(opcoes?.inicio ?? 0, 0);
+    const url = `${BASE}/paper/search?query=${encodeURIComponent(termo)}&limit=${porPagina}&offset=${inicio}&fields=${CAMPOS}`;
     const texto = await fetchTexto(url, "semantic-scholar", signal, cabecalhos());
     const parsed = respostaBuscaSchema.safeParse(JSON.parse(texto));
     if (!parsed.success) {

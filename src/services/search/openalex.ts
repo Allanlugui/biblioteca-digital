@@ -91,9 +91,12 @@ function comMailto(url: string): string {
 export const openalexProvider: SearchProvider = {
   fonte: "openalex",
 
-  async buscar(termo: string, limite: number, signal?: AbortSignal): Promise<Documento[]> {
+  async buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: { inicio?: number }): Promise<Documento[]> {
+    const porPagina = Math.min(Math.max(limite, 1), 200);
+    const inicio = Math.max(opcoes?.inicio ?? 0, 0);
+    const pagina = Math.floor(inicio / porPagina) + 1;
     const url = comMailto(
-      `${BASE}?search=${encodeURIComponent(termo)}&per-page=${limite}&select=${CAMPOS}`,
+      `${BASE}?search=${encodeURIComponent(termo)}&per-page=${porPagina}&page=${pagina}&select=${CAMPOS}`,
     );
     const texto = await fetchTexto(url, "openalex", signal);
     const parsed = respostaBuscaSchema.safeParse(JSON.parse(texto));

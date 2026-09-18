@@ -122,10 +122,11 @@ function analisarFeed(xml: string): Entrada[] {
 export const arxivProvider: SearchProvider = {
   fonte: "arxiv",
 
-  async buscar(termo: string, limite: number, signal?: AbortSignal): Promise<Documento[]> {
+  async buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: { inicio?: number }): Promise<Documento[]> {
+    const inicio = Math.max(opcoes?.inicio ?? 0, 0);
     const url =
       `${BASE}?search_query=all:${encodeURIComponent(termo)}` +
-      `&start=0&max_results=${limite}&sortBy=relevance&sortOrder=descending`;
+      `&start=${inicio}&max_results=${limite}&sortBy=relevance&sortOrder=descending`;
     const xml = await fetchTexto(url, "arxiv", signal);
     return analisarFeed(xml)
       .map(mapear)

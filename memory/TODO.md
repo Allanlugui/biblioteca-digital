@@ -66,6 +66,11 @@
 - [x] Migration 0002 + inserts atualizados
 - [ ] Rodar `supabase/migrations/0002_documento_enriquecido.sql` no SQL Editor (usuário, OBRIGATÓRIO — sem ela, estante/progresso falham)
 
+## Bloco B — Busca avançada (CONCLUÍDO e validado)
+- [x] Filtros (período, fontes, tipo, só PDF), ordenação (3 modos), paginação
+- [x] Aviso de fontes indisponíveis + volta com filtros preservados
+- [x] Cards com DOI, citações e assuntos
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README

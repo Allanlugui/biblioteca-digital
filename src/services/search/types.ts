@@ -4,6 +4,11 @@ export type SearchProviderId = Extract<Fonte, "openalex" | "arxiv" | "doaj" | "s
 
 export interface SearchProvider {
   readonly fonte: SearchProviderId;
-  buscar(termo: string, limite: number, signal?: AbortSignal): Promise<Documento[]>;
+  buscar(termo: string, limite: number, signal?: AbortSignal, opcoes?: OpcoesBusca): Promise<Documento[]>;
   buscarPorId(externalId: string, signal?: AbortSignal): Promise<Documento | null>;
 }
+
+export type OpcoesBusca = {
+  // Deslocamento (0-based) para paginação; cada fonte traduz para seu dialeto.
+  inicio?: number;
+};

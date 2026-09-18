@@ -1,13 +1,13 @@
 import { config } from "@/lib/config";
-import type { Documento, ResultadoBusca } from "@/types";
+import type { Documento, FiltrosBusca, OrdemBusca, ResultadoBusca } from "@/types";
 import { arxivProvider } from "./arxiv";
 import { doajProvider } from "./doaj";
 import { openalexProvider } from "./openalex";
 import { semanticScholarProvider } from "./semanticscholar";
 import { webDisponivel, webProvider } from "./web";
-import type { SearchProvider } from "./types";
+import type { SearchProvider, SearchProviderId } from "./types";
 
-const providers: SearchProvider[] = [
+const TODOS: SearchProvider[] = [
   openalexProvider,
   arxivProvider,
   doajProvider,
@@ -15,6 +15,10 @@ const providers: SearchProvider[] = [
   // Busca universal só com chave configurada; sem ela, as 4 fontes abertas seguem.
   ...(webDisponivel() ? [webProvider] : []),
 ];
+
+// Teto por fonte: suficiente para filtrar e paginar sem sobrecarregar as APIs.
+const MAX_POR_FONTE = 100;
+const MARGEM_FILTROS = 20;
 
 type EntradaCache = {
   expiraEm: number;
@@ -78,40 +82,111 @@ export function ordenar(documentos: Documento[], consulta: string): Documento[] 
     .map(({ doc }) => doc);
 }
 
-function chaveCache(consulta: string, limite: number): string {
-  return `${consulta.trim().toLowerCase()}|${limite}`;
+function anoDe(publicacao: string | null): number | null {
+  const ano = publicacao ? /^\d{4}/.exec(publicacao)?.[0] : undefined;
+  if (!ano) return null;
+  const numero = Number.parseInt(ano, 10);
+  return Number.isInteger(numero) ? numero : null;
 }
 
-export async function executarBusca(consulta: string, limite: number): Promise<ResultadoBusca> {
-  const chave = chaveCache(consulta, limite);
+export function aplicarFiltros(documentos: Documento[], filtros: FiltrosBusca): Documento[] {
+  return documentos.filter((doc) => {
+    if (filtros.soPdf && !doc.urlPdf) return false;
+    if (filtros.tipo && doc.tipo?.toLowerCase() !== filtros.tipo.toLowerCase()) return false;
+    if (filtros.anoDe !== undefined || filtros.anoAte !== undefined) {
+      const ano = anoDe(doc.dataPublicacao);
+      if (ano === null) return false;
+      if (filtros.anoDe !== undefined && ano < filtros.anoDe) return false;
+      if (filtros.anoAte !== undefined && ano > filtros.anoAte) return false;
+    }
+    return true;
+  });
+}
+
+export function ordenarPor(documentos: Documento[], consulta: string, ordem: OrdemBusca): Documento[] {
+  if (ordem === "recentes") {
+    return [...documentos]
+      .map((doc, indice) => ({ doc, indice }))
+      .sort((a, b) => {
+        const anoA = anoDe(a.doc.dataPublicacao) ?? -1;
+        const anoB = anoDe(b.doc.dataPublicacao) ?? -1;
+        return anoB - anoA || a.indice - b.indice;
+      })
+      .map(({ doc }) => doc);
+  }
+  if (ordem === "citados") {
+    return [...documentos]
+      .map((doc, indice) => ({ doc, indice }))
+      .sort((a, b) => (b.doc.citacoes ?? -1) - (a.doc.citacoes ?? -1) || a.indice - b.indice)
+      .map(({ doc }) => doc);
+  }
+  return ordenar(documentos, consulta);
+}
+
+function chaveCache(consulta: string, porPagina: number, pagina: number, filtros: FiltrosBusca): string {
+  return [
+    consulta.trim().toLowerCase(),
+    porPagina,
+    pagina,
+    filtros.ordem ?? "relevancia",
+    filtros.fontes?.join(",") ?? "todas",
+    filtros.anoDe ?? "",
+    filtros.anoAte ?? "",
+    filtros.tipo ?? "",
+    filtros.soPdf ? "pdf" : "",
+  ].join("|");
+}
+
+export async function executarBusca(
+  consulta: string,
+  porPagina: number,
+  pagina = 1,
+  filtros: FiltrosBusca = {},
+): Promise<ResultadoBusca> {
+  const chave = chaveCache(consulta, porPagina, pagina, filtros);
   const agora = Date.now();
   const emCache = cache.get(chave);
   if (emCache && emCache.expiraEm > agora) {
     return emCache.resultado;
   }
 
+  const providers = filtros.fontes ? TODOS.filter((p) => filtros.fontes?.includes(p.fonte)) : TODOS;
+  // Busca além da página atual para que filtros e ordenação vejam material suficiente.
+  const porFonte = Math.min(pagina * porPagina + MARGEM_FILTROS, MAX_POR_FONTE);
+  const inicioFonte = Math.min((pagina - 1) * porPagina, MAX_POR_FONTE - 1);
+
   const resultados = await Promise.allSettled(
-    providers.map((provider) => provider.buscar(consulta, limite)),
+    providers.map((provider) => provider.buscar(consulta, porFonte, undefined, { inicio: inicioFonte })),
   );
 
   const documentos: Documento[] = [];
+  const fontesIndisponiveis: SearchProviderId[] = [];
   resultados.forEach((resultadoParcial, indice) => {
     if (resultadoParcial.status === "fulfilled") {
       documentos.push(...resultadoParcial.value);
     } else {
+      const fonte = providers[indice]?.fonte;
+      if (fonte) fontesIndisponiveis.push(fonte);
       const motivo =
         resultadoParcial.reason instanceof Error
           ? resultadoParcial.reason.message
           : resultadoParcial.reason;
-      console.warn(`[busca] provider ${providers[indice]?.fonte} falhou:`, motivo);
+      console.warn(`[busca] provider ${fonte} falhou:`, motivo);
     }
   });
 
-  const unicos = ordenar(deduplicar(documentos), consulta).slice(0, limite);
+  const filtrados = aplicarFiltros(deduplicar(documentos), filtros);
+  const ordenados = ordenarPor(filtrados, consulta, filtros.ordem ?? "relevancia");
+  const inicio = (pagina - 1) * porPagina;
   const resultado: ResultadoBusca = {
     consulta,
-    total: unicos.length,
-    documentos: unicos,
+    total: ordenados.length,
+    documentos: ordenados.slice(inicio, inicio + porPagina),
+    pagina,
+    porPagina,
+    temMais: ordenados.length > inicio + porPagina,
+    fontesConsultadas: providers.map((p) => p.fonte),
+    fontesIndisponiveis,
   };
 
   cache.set(chave, { expiraEm: agora + config.searchCacheTtlMs, resultado });

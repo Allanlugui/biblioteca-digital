@@ -7,7 +7,7 @@ import { registrarBusca } from "@/services/historico";
 
 export const dynamic = "force-dynamic";
 
-const PARAMS_PERMITIDOS = ["q", "limite"];
+const PARAMS_PERMITIDOS = ["q", "limite", "pagina", "anoDe", "anoAte", "fonte", "tipo", "soPdf", "ordem"];
 const LIMITE_PADRAO = 20;
 
 export async function GET(request: NextRequest) {
@@ -38,9 +38,17 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const fonte = url.searchParams.getAll("fonte");
   const parsed = buscaQuerySchema.safeParse({
     q: url.searchParams.get("q"),
     limite: url.searchParams.get("limite") ?? undefined,
+    pagina: url.searchParams.get("pagina") ?? undefined,
+    anoDe: url.searchParams.get("anoDe") ?? undefined,
+    anoAte: url.searchParams.get("anoAte") ?? undefined,
+    fonte: fonte.length > 0 ? fonte : (url.searchParams.get("fonte") ?? undefined),
+    tipo: url.searchParams.get("tipo") ?? undefined,
+    soPdf: url.searchParams.get("soPdf") ?? undefined,
+    ordem: url.searchParams.get("ordem") ?? undefined,
   });
   if (!parsed.success) {
     return fail(
@@ -52,7 +60,15 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const resultado = await executarBusca(parsed.data.q, parsed.data.limite ?? LIMITE_PADRAO);
+  const porPagina = parsed.data.limite ?? LIMITE_PADRAO;
+  const resultado = await executarBusca(parsed.data.q, porPagina, parsed.data.pagina ?? 1, {
+    fontes: parsed.data.fonte,
+    anoDe: parsed.data.anoDe ? Number.parseInt(parsed.data.anoDe, 10) : undefined,
+    anoAte: parsed.data.anoAte ? Number.parseInt(parsed.data.anoAte, 10) : undefined,
+    tipo: parsed.data.tipo,
+    soPdf: parsed.data.soPdf,
+    ordem: parsed.data.ordem,
+  });
   await registrarBusca(resultado.consulta, resultado.total);
   return ok(resultado, headers);
 }
