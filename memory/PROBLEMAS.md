@@ -144,3 +144,11 @@
 ### P24. Semantic Scholar retorna 429 sem chave em IPs compartilhados — LIMITAÇÃO DOCUMENTADA
 - **Sintoma:** `curl` direto à API S2 devolveu 429 (cota de 100 req/5min por IP estourada).
 - **Mitigação:** falha isolada por provider (busca segue com as demais fontes); env opcional `SEMANTIC_SCHOLAR_API_KEY` (gratuita) eleva a cota; documentado no README e `.env.example`.
+
+## 18/09/2026 — Fase 9
+
+### P25. Supabase inalcançável travava o ingest por ~60s — RESOLVIDO
+- **Sintoma:** com envs placeholder, `/api/arquivo` demorou 59s e devolveu 500; o leitor não abria.
+- **Causa:** só a primeira consulta tinha timeout; `fetchPdf` baixava o arquivo e as chamadas seguintes (dedup, upload, upsert) penduravam sem prazo.
+- **Resolução:** helper `comTimeout` em todas as idas ao Acervo (10s leitura/escrita, 25s upload) + `registrarBusca` com teto de 4s; qualquer falha vira 503 e o cliente usa o proxy direto.
+- **Lição:** integração externa no caminho da leitura precisa de prazo em cada passo, não só no primeiro.

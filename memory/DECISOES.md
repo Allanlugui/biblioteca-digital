@@ -269,3 +269,22 @@
 - **Decisão:** `semanticscholar.ts` no padrão `SearchProvider` (Zod, `paraHttps` no PDF, ids `semantic-scholar_{paperId-hex40}`); registrado no agregador e em `documentos.ts`; env opcional `SEMANTIC_SCHOLAR_API_KEY` via header `x-api-key` (extensão retrocompatível de `fetchTexto`).
 - **Contexto:** pedido de busca "universal"; S2 (~200M obras, inclui editoras fora das 3 fontes) é o maior passo sem chave obrigatória. Busca 100% da web exigiria API web com chave paga (Brave/Google) — fora do escopo sem decisão do usuário.
 - **Impacto:** 3 testes novos com fetch mockado (39/39); integração real pendente de cota (P24); README e `.env.example` atualizados.
+
+## 18/09/2026 — Fase 9 (Supabase: acervo universal + painel)
+
+### D49. Postgres + Storage em vez de banco próprio
+- **Decisão:** Supabase (`@supabase/supabase-js` + `@supabase/ssr`); sessão via `src/proxy.ts` (middleware depreciado no Next 16); magic link sem senha.
+- **Motivo:** auth, banco e arquivos num só serviço gerenciado, sem operar infra; login opcional preserva leitura anônima.
+- **Impacto:** 3 envs novas; sem chaves o app degrada com graça (proxy direto, sem estante).
+
+### D50. Acervo universal por hash + ingest sob demanda
+- **Decisão:** `GET /api/arquivo/[id]` serve do Storage (`pdfs/<sha256>.pdf`) ou arquiva da origem validada (guard + MIME + magic); dedup entre fontes pelo hash; contadores de acesso; toda ida ao Acervo com timeout e fallback para o proxy.
+- **Impacto:** leitura repetida não bate na origem; PDFs validados uma vez.
+
+### D51. RLS default deny + service-role só no servidor
+- **Decisão:** `documentos`/`buscas_agregadas` leitura pública e escrita só service-role; `buscas`/`estante`/`progresso_leitura`/`perfis` com `auth.uid() = user_id`; bucket `pdfs` leitura pública e escrita só service-role; `buscas` individual só de logados, agregado sem PII sempre.
+- **Impacto:** isolamento total entre usuários; migration em `supabase/migrations/0001_acervo.sql`.
+
+### D52. Progresso híbrido (servidor + navegador)
+- **Decisão:** viewer avisa a página (debounce); ficha grava PUT (logado) e `localStorage` (sempre); retomada: servidor primeiro, navegador como fallback.
+- **Impacto:** anônimo continua de onde parou neste navegador; logado, em qualquer dispositivo.

@@ -1,21 +1,93 @@
 ﻿"use client";
 
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { documentoRespostaSchema } from "@/schemas/respostas";
 import { ErrorState, LoadingState } from "./query-states";
 import { useApi } from "./use-api";
 import { formatarData, linkExternoSeguro, nomesFontes } from "@/lib/apresentacao";
 import { DownloadButton } from "./download-button";
+import { SaveButton } from "./save-button";
 
 const PdfViewer = dynamic(
   () => import("./pdf-viewer").then((mod) => mod.PdfViewer),
   { ssr: false, loading: () => <p className="mt-6 text-sm italic text-ink-soft">Preparando o leitor…</p> },
 );
 
+function chaveLocal(id: string): string {
+  return `leitura:${id}`;
+}
+
+function lerPaginaLocal(id: string): number | null {
+  try {
+    const valor = window.localStorage.getItem(chaveLocal(id));
+    const pagina = valor ? Number.parseInt(valor, 10) : NaN;
+    return Number.isInteger(pagina) && pagina >= 1 ? pagina : null;
+  } catch {
+    return null;
+  }
+}
+
 export function DocumentoClient({ id }: { id: string }) {
   const { estado, tentarNovamente } = useApi(`/api/documento/${encodeURIComponent(id)}`, documentoRespostaSchema);
   const [leitorAberto, setLeitorAberto] = useState(false);
+  const [fonteArquivo, setFonteArquivo] = useState<string | null>(null);
+  const [paginaInicial, setPaginaInicial] = useState(1);
+  const [leitorPronto, setLeitorPronto] = useState(false);
+
+  const guardarProgresso = useCallback(
+    async (pagina: number, total: number) => {
+      try {
+        window.localStorage.setItem(chaveLocal(id), String(pagina));
+      } catch {
+        // Navegador sem storage: o progresso segue só na sessão.
+      }
+      try {
+        await fetch("/api/progresso", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ documento: id, pagina, total }),
+        });
+      } catch {
+        // Anônimo ou offline: fica só no navegador.
+      }
+    },
+    [id],
+  );
+
+  async function abrirLeitor() {
+    setLeitorAberto(true);
+    // 1. Ponto de retomada: servidor primeiro, navegador como fallback.
+    let inicio = lerPaginaLocal(id) ?? 1;
+    try {
+      const resposta = await fetch(`/api/progresso?documento=${encodeURIComponent(id)}`, { cache: "no-store" });
+      if (resposta.ok) {
+        const corpo = await resposta.json();
+        if (typeof corpo.data?.pagina === "number" && corpo.data.pagina >= 1) {
+          inicio = corpo.data.pagina;
+        }
+      }
+    } catch {
+      // Anônimo: vale o que está no navegador.
+    }
+    setPaginaInicial(inicio);
+    // 2. Fonte do arquivo: acervo universal, com fallback para o proxy direto.
+    try {
+      const resposta = await fetch(`/api/arquivo/${encodeURIComponent(id)}`, { cache: "no-store" });
+      if (resposta.ok) {
+        const corpo = await resposta.json();
+        if (typeof corpo.data?.url === "string" && corpo.data.url) {
+          setFonteArquivo(corpo.data.url);
+          setLeitorPronto(true);
+          return;
+        }
+      }
+    } catch {
+      // Acervo indisponível: usa a origem direta abaixo.
+    }
+    setFonteArquivo(null);
+    setLeitorPronto(true);
+  }
 
   if (estado.status === "loading") return <div className="mt-8"><LoadingState /></div>;
   if (estado.status === "error") return <div className="mt-8"><ErrorState mensagem={estado.mensagem} tentarNovamente={tentarNovamente} /></div>;
@@ -23,6 +95,7 @@ export function DocumentoClient({ id }: { id: string }) {
   const documento = estado.data;
   const urlPagina = linkExternoSeguro(documento.urlPagina);
   const urlPdfExterno = linkExternoSeguro(documento.urlPdf);
+  const proxyDireto = urlPdfExterno ? `/api/proxy?url=${encodeURIComponent(urlPdfExterno)}` : null;
 
   return (
     <article className="mt-8 overflow-hidden rounded-md border border-rule bg-vellum shadow-[0_16px_40px_rgba(34,26,16,0.08)]">
@@ -50,15 +123,25 @@ export function DocumentoClient({ id }: { id: string }) {
         {documento.descricao && <p className="mt-6 leading-7 text-ink-soft">{documento.descricao}</p>}
         <div className="mt-8 flex flex-wrap items-center gap-4 border-t border-rule pt-6">
           {documento.urlPdf ? <DownloadButton id={documento.id} /> : null}
+          <SaveButton id={documento.id} />
           {urlPdfExterno && <a href={urlPdfExterno} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">Abrir PDF na origem<span className="sr-only"> (abre em nova aba)</span></a>}
           {urlPagina && <a href={urlPagina} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-library-800 underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-library-700">Página da publicação<span className="sr-only"> (abre em nova aba)</span></a>}
         </div>
         {documento.urlPdf && !leitorAberto && (
-          <button onClick={() => setLeitorAberto(true)} className="mt-6 w-full rounded-md border-2 border-library-800 px-6 py-3 font-semibold text-library-800 hover:bg-library-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-library-700 sm:w-auto">
+          <button onClick={abrirLeitor} className="mt-6 w-full rounded-md border-2 border-library-800 px-6 py-3 font-semibold text-library-800 hover:bg-library-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-library-700 sm:w-auto">
             Ler no navegador
           </button>
         )}
-        {leitorAberto && urlPdfExterno && <PdfViewer urlPdf={urlPdfExterno} />}
+        {leitorAberto && !leitorPronto && (
+          <p className="mt-6 text-sm italic text-ink-soft" role="status">Buscando o livro no acervo…</p>
+        )}
+        {leitorAberto && leitorPronto && (fonteArquivo ?? proxyDireto) && (
+          <PdfViewer
+            urlArquivo={(fonteArquivo ?? proxyDireto) as string}
+            paginaInicial={paginaInicial}
+            aoMudarPagina={(pagina, total) => void guardarProgresso(pagina, total)}
+          />
+        )}
       </div>
     </article>
   );

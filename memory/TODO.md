@@ -48,3 +48,13 @@
 - [x] "Voltar aos resultados" preserva a consulta via URL
 - [x] Mensagens amigáveis para 400/502 no leitor
 - [x] Provider Semantic Scholar + `SEMANTIC_SCHOLAR_API_KEY` opcional
+
+## Fase 9 — Supabase: acervo universal + painel (CONCLUÍDA no código)
+- [x] Migration SQL (documentos, buscas, estante, progresso, perfis, RLS, Storage)
+- [x] Auth magic link + sessão via proxy + header
+- [x] Ingest automático `/api/arquivo/[id]` com fallback ao proxy
+- [x] Painel `/estante` (continuar lendo, salvos, buscas) + salvar na ficha
+- [x] Progresso híbrido servidor + navegador
+- [ ] Rodar migration no SQL Editor do Supabase (usuário)
+- [ ] Preencher `.env.local` + envs da Vercel com as chaves reais (usuário)
+- [ ] Validar fluxo logado de ponta a ponta em produção

@@ -21,34 +21,42 @@ function mensagemAmigavel(erro: unknown): string {
   return original;
 }
 
-export function PdfViewer({ urlPdf }: { urlPdf: string }) {
+type PaginaMudou = (pagina: number, total: number) => void;
+
+export function PdfViewer({ urlArquivo, paginaInicial = 1, aoMudarPagina }: { urlArquivo: string; paginaInicial?: number; aoMudarPagina?: PaginaMudou }) {
   const palcoRef = useRef<HTMLDivElement | null>(null);
   const docRef = useRef<PDFDocumentProxy | null>(null);
   const cacheRef = useRef(new Map<number, HTMLCanvasElement>());
   const rendersRef = useRef<{ cancel: () => void }[]>([]);
-  const paginaRef = useRef(1);
+  const paginaRef = useRef(paginaInicial);
   const toqueXRef = useRef<number | null>(null);
+  const aoMudarRef = useRef<PaginaMudou | undefined>(aoMudarPagina);
+  useEffect(() => {
+    aoMudarRef.current = aoMudarPagina;
+  });
 
   const [estado, setEstado] = useState<EstadoLeitor>("loading");
   const [mensagem, setMensagem] = useState("");
   const [total, setTotal] = useState(0);
-  const [pagina, setPagina] = useState(1);
+  const [pagina, setPagina] = useState(paginaInicial);
   const [direcao, setDirecao] = useState<1 | -1>(1);
 
   // Carrega o documento (uma vez por URL).
   useEffect(() => {
     let cancelado = false;
     const cache = cacheRef.current;
-    const tarefa = getDocument({ url: `/api/proxy?url=${encodeURIComponent(urlPdf)}`, withCredentials: false });
+    const tarefa = getDocument({ url: urlArquivo, withCredentials: false });
     (async () => {
       try {
         const doc = await tarefa.promise;
         if (cancelado) return;
         docRef.current = doc;
         cache.clear();
-        paginaRef.current = 1;
-        setTotal(Math.min(doc.numPages, MAX_PAGINAS));
-        setPagina(1);
+        const limite = Math.min(doc.numPages, MAX_PAGINAS);
+        const inicio = Math.min(Math.max(paginaRef.current, 1), limite);
+        paginaRef.current = inicio;
+        setTotal(limite);
+        setPagina(inicio);
         setDirecao(1);
         setEstado("ready");
       } catch (error) {
@@ -66,7 +74,7 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
       docRef.current = null;
       cache.clear();
     };
-  }, [urlPdf]);
+  }, [urlArquivo]);
 
   const obterCanvas = useCallback(async (numero: number, cancelado: () => boolean) => {
     const emCache = cacheRef.current.get(numero);
@@ -113,6 +121,11 @@ export function PdfViewer({ urlPdf }: { urlPdf: string }) {
       // Pré-renderiza as vizinhas para a virada ser instantânea.
       if (pagina < total) void obterCanvas(pagina + 1, foiCancelado).catch(() => undefined);
       if (pagina > 1) void obterCanvas(pagina - 1, foiCancelado).catch(() => undefined);
+      // Avisa quem escuta (progresso de leitura), com respiro entre viradas.
+      // O guard `cancelado` pertence ao efeito: se a página mudar, este aviso morre.
+      window.setTimeout(() => {
+        if (!cancelado) aoMudarRef.current?.(pagina, total);
+      }, 800);
     })().catch(() => undefined);
     return () => {
       cancelado = true;

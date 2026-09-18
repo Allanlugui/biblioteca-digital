@@ -3,6 +3,7 @@ import { API_ERROR_CODES, fail, formatZodErrors, ok } from "@/lib/api";
 import { checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/rate-limit";
 import { buscaQuerySchema } from "@/schemas";
 import { executarBusca } from "@/services/search/agregador";
+import { registrarBusca } from "@/services/historico";
 
 export const dynamic = "force-dynamic";
 
@@ -52,5 +53,6 @@ export async function GET(request: NextRequest) {
   }
 
   const resultado = await executarBusca(parsed.data.q, parsed.data.limite ?? LIMITE_PADRAO);
+  await registrarBusca(resultado.consulta, resultado.total);
   return ok(resultado, headers);
 }
