@@ -376,6 +376,12 @@
 - **Decisão:** `lib/linguagem-natural.ts` (depois de/desde/antes de/entre/últimos N anos/último ano) + aplicação na /busca só sem filtro explícito, com nota visível e "Desfazer".
 - **Impacto:** 75 testes; E2E real (nota + 31 resultados ≥2024, zero erros).
 
+## 18/09/2026 — Contorno de landing pages (descoberta de PDF)
+
+### D71. fetchPdfResiliente: HTML vira busca pelo arquivo real
+- **Decisão:** diante de MIME não-PDF, baixa o HTML (teto 2MB) e extrai `citation_pdf_url` + âncoras (.pdf, /download/, texto PDF), tentando uma vez com as mesmas validações (guard, MIME, magic, tamanho).
+- **Impacto:** caso PUCRS (OJS sem extensão .pdf) passou de 502 a 200; 83 testes; proxy, download e ingest usam o caminho novo.
+
 ## 18/09/2026 — Auth e-mail + senha (pós-diagnóstico)
 
 ### D70. Login principal com senha; magic link secundário

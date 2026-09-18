@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import type { NextRequest } from "next/server";
 import { API_ERROR_CODES, fail, ok, formatZodErrors } from "@/lib/api";
-import { fetchPdf, PdfError } from "@/lib/pdf";
+import { fetchPdfResiliente, PdfError } from "@/lib/pdf";
 import { checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/rate-limit";
 import { criarClienteAdmin } from "@/lib/supabase/admin";
 import { assertPublicHttpsUrl, UrlGuardError } from "@/lib/url-guard";
@@ -141,7 +141,7 @@ export async function GET(request: NextRequest, context: RouteContext<"/api/arqu
 
   let bytes: ArrayBuffer;
   try {
-    const pdf = await fetchPdf(alvo);
+    const pdf = await fetchPdfResiliente(alvo);
     bytes = await new Response(pdf.body).arrayBuffer();
   } catch (error) {
     if (error instanceof PdfError) {

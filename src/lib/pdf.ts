@@ -1,4 +1,5 @@
 import { config } from "./config";
+import { descobrirPdfUrl } from "./descoberta-pdf";
 import { fetchPinned, PINNED_TIMEOUT_CODE } from "./pinned-fetch";
 import { UrlGuardError } from "./url-guard";
 
@@ -147,8 +148,7 @@ function filenameFromUrl(url: string): string {
   return "documento.pdf";
 }
 
-export async function fetchPdf(url: string): Promise<PdfDownload> {
-  const controller = new AbortController();
+export async function fetchPdf(url: string): Promise<PdfDownload> {  const controller = new AbortController();
   const timeoutId = setTimeout(
     () => controller.abort(new PdfError("TIMEOUT", "Tempo de espera pela origem excedido.")),
     config.proxyTimeoutMs,
@@ -196,5 +196,18 @@ export async function fetchPdf(url: string): Promise<PdfDownload> {
     };
   } finally {
     clearTimeout(timeoutId);
+  }
+}
+
+// Tenta o PDF direto; se a origem devolver página HTML, descobre o arquivo
+// real (citation_pdf_url/âncora) e tenta uma vez. Mesmas validações no final.
+export async function fetchPdfResiliente(url: string): Promise<PdfDownload> {
+  try {
+    return await fetchPdf(url);
+  } catch (error) {
+    if (!(error instanceof PdfError) || error.code !== "INVALID_MEDIA_TYPE") throw error;
+    const descoberto = await descobrirPdfUrl(url);
+    if (!descoberto) throw error;
+    return fetchPdf(descoberto);
   }
 }

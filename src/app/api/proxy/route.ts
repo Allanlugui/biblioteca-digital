@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server";
 import { API_ERROR_CODES, fail, formatZodErrors } from "@/lib/api";
-import { fetchPdf, PdfError } from "@/lib/pdf";
+import { fetchPdfResiliente, PdfError } from "@/lib/pdf";
 import { checkRateLimit, getClientIp, rateLimitHeaders } from "@/lib/rate-limit";
 import { assertPublicHttpsUrl, UrlGuardError } from "@/lib/url-guard";
 import { proxyQuerySchema } from "@/schemas";
@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
 
   let pdf;
   try {
-    pdf = await fetchPdf(target.url.toString());
+    pdf = await fetchPdfResiliente(target.url.toString());
   } catch (error) {
     if (error instanceof PdfError) {
       const mapped = error.toFail();

@@ -188,3 +188,8 @@
 - **Solução:** configurar SMTP próprio em Auth → Email → SMTP. Recomendado Resend (grátis generoso, feito para transacional); alternativa Gmail com senha de app (limite ~500/dia).
 - **Escolha do usuário:** Resend (aguardando configuração no painel).
 - **RESOLVIDO:** SMTP configurado e funcionando; `/entrar` em produção exibe login com senha + magic link secundário (confirmado via fetch).
+
+### P32. 502 em landing pages sem .pdf na URL — RESOLVIDO com descoberta
+- **Sintoma:** PUCRS/OJS devolvia 502 mesmo com o PDF a um clique (URL `/download/` sem extensão).
+- **Causa:** extrator inicial só aceitava href terminado em .pdf.
+- **Resolução:** aceita rotas /download/ e texto da âncora; validação final continua igual. Ajuste de regex para ES2017 (sem flag `s`). Caso real: 200 application/pdf em 2.7s.
