@@ -320,6 +320,12 @@
 - **Decisão:** Informações (selos, título, dl com autoria/data/DOI/citações/tipo/idioma + chips de assuntos), Resumo, Arquivos (PDF status, ler/baixar/salvar ou aviso honesto), Origem (fonte + ver registro original). Referências omitidas (fontes não fornecem sem chamadas extras — ver D55).
 - **Impacto:** só apresentação sobre os metadados do Bloco A; 60 testes; validado com screenshot real.
 
+## 18/09/2026 — Bloco E (Leitor: zoom, busca, tela cheia)
+
+### D59. Ferramentas do leitor sem biblioteca nova
+- **Decisão:** zoom 50–250% (cache por página@escala, botão % reseta), busca textual via `getTextContent` com navegação entre ocorrências (sem highlight no canvas — limitação declarada), tela cheia com Fullscreen API + CSS `:fullscreen`, setas do teclado ignoradas em inputs.
+- **Impacto:** contrato `PdfViewer` estendido de forma retrocompatível; E2E real (zoom 125%, 8 ocorrências, fullscreen, zero erros).
+
 ## 18/09/2026 — Fase 10 (Busca universal na web)
 
 ### D54. 5ª fonte: Google Programmable Search, só PDFs, com chave do usuário

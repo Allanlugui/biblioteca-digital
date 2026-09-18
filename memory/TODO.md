@@ -79,6 +79,10 @@
 - [x] Seções Informações, Resumo, Arquivos e Origem
 - [x] DOI, citações, tipo, idioma, assuntos (só quando disponíveis)
 
+## Bloco E — Leitor PDF (CONCLUÍDO e validado)
+- [x] Zoom 50–250%, busca no texto, tela cheia
+- [x] Limitação: sem highlight das ocorrências no canvas
+
 ## Fase 10 — Busca universal na web (CONCLUÍDA no código)
 - [x] Provider Web (Google CSE, só PDFs, ids estáveis via acervo)
 - [x] Registro condicional + 5 fontes no rodapé/home/README
